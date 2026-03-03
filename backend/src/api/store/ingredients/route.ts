@@ -1,11 +1,11 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { FORMULATION_MODULE } from "../../modules/formulation"
+import  FormulationModuleService from "../../../modules/formulation/service"
 
 export const GET = async (
   req: MedusaRequest,
   res: MedusaResponse
 ) => {
-  const formulationService = req.scope.resolve(FORMULATION_MODULE)
+  const formulationService = req.scope.resolve("formulationModuleService") as FormulationModuleService
   const ingredients = await formulationService.getIngredients()
   
   res.json({

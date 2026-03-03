@@ -4,12 +4,23 @@
   "description": "Medusa v2 Backend for Las Vegas Craft Chocolate",
   "main": "index.js",
   "dependencies": {
-    "@medusajs/framework": "^2.0.0",
-    "@medusajs/medusa-cli": "^2.0.0",
-    "medusa-payment-stripe": "^2.0.0",
-    "better-sqlite3": "^11.0.0"
+    "@medusajs/admin-sdk": "^2.13.3",
+    "@medusajs/cli": "^2.13.3",
+    "@medusajs/dashboard": "^2.13.3",
+    "@medusajs/framework": "^2.13.3",
+    "@medusajs/js-sdk": "^2.13.3",
+    "@medusajs/medusa": "^2.13.3",
+    "@medusajs/payment-stripe": "^2.13.3",
+    "pg": "^8.11.0"
   },
   "scripts": {
-    "dev": "medusa dev"
+    "dev": "medusa develop",
+    "build": "medusa build",
+    "start": "medusa start",
+    "db:migrate": "medusa db:migrate"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
   }
 }
