@@ -2,7 +2,7 @@
   "name": "lv-chocolate-backend",
   "version": "0.0.1",
   "description": "Medusa v2 Backend for Las Vegas Craft Chocolate",
-  "main": "index.js",
+  "main": "medusa-config.js",
   "dependencies": {
     "@medusajs/admin-sdk": "^2.13.3",
     "@medusajs/cli": "^2.13.3",
