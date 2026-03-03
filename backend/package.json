@@ -1,0 +1,15 @@
+{
+  "name": "lv-chocolate-backend",
+  "version": "0.0.1",
+  "description": "Medusa v2 Backend for Las Vegas Craft Chocolate",
+  "main": "index.js",
+  "dependencies": {
+    "@medusajs/framework": "^2.0.0",
+    "@medusajs/medusa-cli": "^2.0.0",
+    "medusa-payment-stripe": "^2.0.0",
+    "better-sqlite3": "^11.0.0"
+  },
+  "scripts": {
+    "dev": "medusa dev"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "lv-chocolate-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:storefront\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:storefront": "cd storefront && npm run dev",
+    "build": "cd storefront && npm run build",
+    "start": "cd storefront && npm run start",
+    "lint": "cd storefront && npm run lint"
+  },
+  "dependencies": {
+    "concurrently": "^9.1.0",
+    "framer-motion": "^12.34.4"
+  }
+}
