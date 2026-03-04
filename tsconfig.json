@@ -15,7 +15,7 @@
   },
   "include": [
     "src/**/*",
-    "medusa-config.ts" 
+    "medusa-config.js" 
   ],
   "exclude": [
     "node_modules",
