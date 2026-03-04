@@ -14,7 +14,7 @@
     "pg": "^8.11.0"
   },
 "scripts": {
-  "build": "medusa build && medusa db:migrate",
+  "build": "medusa build && npx medusa db:migrate",
   "start": "medusa start",
   "db:migrate": "medusa db:migrate"
 },
