@@ -13,12 +13,12 @@
     "predeploy": "cd .medusa/server && npx medusa db:migrate"
   },
   "dependencies": {
-    "@medusajs/admin-sdk": "latest",
-    "@medusajs/cli": "latest",
-    "@medusajs/framework": "latest",
-    "@medusajs/icons": "latest",
-    "@medusajs/medusa": "latest",
-    "@medusajs/ui": "latest",
+    "@medusajs/admin-sdk": "^2.1.2",
+    "@medusajs/cli": "^2.1.2",
+    "@medusajs/framework": "^2.1.2",
+    "@medusajs/icons": "^2.1.2",
+    "@medusajs/medusa": "^2.1.2",
+    "@medusajs/ui": "^2.1.2",
     "prismjs": "^1.29.0"
   },
   "devDependencies": {
