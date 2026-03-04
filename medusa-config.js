@@ -1,7 +1,8 @@
 const { loadEnv } = require("@medusajs/framework/utils")
 const path = require("path")
 
-loadEnv(process.env.NODE_ENV || "development", process.cwd())
+// Point the environment and logic to the internal server folder
+const projectRoot = path.join(process.cwd(), ".medusa", "server")
+loadEnv(process.env.NODE_ENV || "development", projectRoot)
 
-// This tells the CLI that the real config is the .ts file next to it
-module.exports = require("./medusa-config.ts")
+module.exports = require("./.medusa/server/medusa-config")
