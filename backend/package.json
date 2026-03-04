@@ -15,9 +15,9 @@
   },
   "scripts": {
   "dev": "medusa develop",
-  "build": "medusa build && npx medusa db:migrate",
+  "build": "medusa build && medusa db:migrate --config ./medusa-config.js",
   "start": "medusa start",
-  "db:migrate": "npx medusa db:migrate --config ./medusa-config.js"
+  "db:migrate": "medusa db:migrate --config ./medusa-config.js"
 },
   "devDependencies": {
     "ts-node": "^10.9.2",
