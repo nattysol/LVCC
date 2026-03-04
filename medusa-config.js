@@ -1,9 +1,27 @@
-const { loadEnv } = require("@medusajs/framework/utils")
-const path = require("path")
+const { loadEnv, defineConfig } = require("@medusajs/framework/utils")
 
-// This points the environment to the internal folder created during build
-const projectRoot = path.join(process.cwd(), ".medusa", "server")
-loadEnv(process.env.NODE_ENV || "development", projectRoot)
+// Load environment variables
+loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
-// Redirect the CLI to the actual config located in the server folder
-module.exports = require("./.medusa/server/medusa-config")
+module.exports = defineConfig({
+  projectConfig: {
+    // Database URL is required for the build to validate the schema
+    databaseUrl: process.env.DATABASE_URL,
+    http: {
+      storeCors: process.env.STORE_CORS || "http://localhost:8000",
+      adminCors: process.env.ADMIN_CORS || "http://localhost:7001",
+      authCors: process.env.AUTH_CORS || "http://localhost:7001",
+      jwtSecret: process.env.JWT_SECRET || "supersecret",
+      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+    },
+    // Required for cloud PG connections
+    databaseDriverOptions: process.env.NODE_ENV !== "development" 
+      ? { connection: { ssl: { rejectUnauthorized: false } } } 
+      : {},
+  },
+  // Ensure this block is present to avoid the 'reading admin' error
+  admin: {
+    disable: process.env.DISABLE_MEDUSA_ADMIN === "true",
+  },
+  modules: [],
+})
