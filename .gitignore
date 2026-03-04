@@ -7,6 +7,5 @@ coverage/
 .env*
 !.env.example
 dist/
-medusa-config.js
 medusa-config.js.map
 medusa-config.d.ts
