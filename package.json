@@ -13,11 +13,11 @@
     "@medusajs/payment-stripe": "^2.13.3",
     "pg": "^8.11.0"
   },
- "scripts": {
-  "dev": "medusa develop",
-  "build": "medusa build", 
+"scripts": {
+  "build": "medusa build",
   "start": "medusa start",
-  "db:migrate": "npx medusa db:migrate"
+  "predeploy": "medusa db:migrate",
+  "db:migrate": "medusa db:migrate"
 },
   "devDependencies": {
     "ts-node": "^10.9.2",
