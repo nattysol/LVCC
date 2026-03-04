@@ -14,11 +14,11 @@
     "pg": "^8.11.0"
   },
   "scripts": {
-    "dev": "medusa develop",
-    "build": "medusa build && npx medusa db:migrate",
-    "start": "medusa start",
-    "db:migrate": "npx medusa db:migrate"
-  },
+  "dev": "medusa develop",
+  "build": "medusa build",
+  "start": "medusa start",
+  "db:migrate": "npx medusa db:migrate --config ./medusa-config.js"
+},
   "devDependencies": {
     "ts-node": "^10.9.2",
     "typescript": "^5.0.0"
