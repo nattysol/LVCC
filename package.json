@@ -1,17 +1,27 @@
 {
-  "name": "lv-chocolate-platform",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-  "dev": "concurrently \"npm run dev:backend\" \"npm run dev:storefront\"",
-  "dev:backend": "npm run dev --prefix backend",
-  "dev:storefront": "npm run dev --prefix storefront",
-  "build": "npm install --prefix backend --legacy-peer-deps && npm run build --prefix backend",
-  "start": "npx medusa start", 
-  "db:migrate": "npx medusa db:migrate",
-  "lint": "cd storefront && npm run lint"
-},
+  "name": "lv-chocolate-backend",
+  "version": "0.0.1",
+  "description": "Medusa v2 Backend for Las Vegas Craft Chocolate",
+  "main": "medusa-config.js",
   "dependencies": {
-    "concurrently": "^9.1.0"
+    "@medusajs/admin-sdk": "^2.13.3",
+    "@medusajs/cli": "^2.13.3",
+    "@medusajs/dashboard": "^2.13.3",
+    "@medusajs/framework": "^2.13.3",
+    "@medusajs/js-sdk": "^2.13.3",
+    "@medusajs/medusa": "^2.13.3",
+    "@medusajs/payment-stripe": "^2.13.3",
+    "pg": "^8.11.0"
+  },
+ "scripts": {
+  "dev": "medusa develop",
+  "build": "medusa build", 
+  "start": "medusa start",
+  "db:migrate": "npx medusa db:migrate"
+},
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
   }
+  
 }
