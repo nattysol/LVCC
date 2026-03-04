@@ -7,16 +7,17 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "medusa build",
+    "build": "npx medusa build",
     "start": "cd .medusa/server && npx medusa start",
     "db:migrate": "cd .medusa/server && npx medusa db:migrate",
     "predeploy": "cd .medusa/server && npx medusa db:migrate"
   },
   "dependencies": {
-    "@medusajs/framework": "^2.0.0",
-    "@medusajs/medusa": "^2.0.0",
     "@medusajs/admin-sdk": "^2.0.0",
+    "@medusajs/cli": "^2.0.0",
+    "@medusajs/framework": "^2.0.0",
     "@medusajs/icons": "^2.0.0",
+    "@medusajs/medusa": "^2.0.0",
     "@medusajs/ui": "^2.0.0",
     "prismjs": "^1.29.0"
   },
