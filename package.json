@@ -15,7 +15,7 @@
   },
 "scripts": {
   "build": "medusa build",
-  "db:migrate": "npx medusa db:migrate",
+  "db:migrate": "npx medusa build && npx medusa db:migrate",
   "start": "npx medusa start",
   "predeploy": "npx medusa build && npx medusa db:migrate"
 },
