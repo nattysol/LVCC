@@ -1,7 +1,6 @@
 {
   "name": "lv-chocolate-backend",
   "version": "0.0.1",
-  "description": "Medusa v2 Chocolate Store",
   "main": "medusa-config.js",
   "engines": {
     "node": ">=20.0.0"
@@ -13,12 +12,12 @@
     "predeploy": "cd .medusa/server && npx medusa db:migrate"
   },
   "dependencies": {
-    "@medusajs/admin-sdk": "^2.1.2",
-    "@medusajs/cli": "^2.1.2",
-    "@medusajs/framework": "^2.1.2",
-    "@medusajs/icons": "^2.1.2",
-    "@medusajs/medusa": "^2.1.2",
-    "@medusajs/ui": "^2.1.2",
+    "@medusajs/admin-sdk": "^2.1.3",
+    "@medusajs/cli": "^2.1.3",
+    "@medusajs/framework": "^2.1.3",
+    "@medusajs/icons": "^2.1.3",
+    "@medusajs/medusa": "^2.1.3",
+    "@medusajs/ui": "^2.1.3",
     "prismjs": "^1.29.0"
   },
   "devDependencies": {
