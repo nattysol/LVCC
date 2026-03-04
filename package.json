@@ -6,9 +6,9 @@
   "dev": "concurrently \"npm run dev:backend\" \"npm run dev:storefront\"",
   "dev:backend": "npm run dev --prefix backend",
   "dev:storefront": "npm run dev --prefix storefront",
- "build": "npm install --prefix backend --legacy-peer-deps && npm run build --prefix backend",
-"start": "npm run start --prefix backend",
-  "db:migrate": "npx medusa db:migrate --prefix backend",
+  "build": "npm install --prefix backend --legacy-peer-deps && npm run build --prefix backend",
+  "start": "npx medusa start", 
+  "db:migrate": "npx medusa db:migrate",
   "lint": "cd storefront && npm run lint"
 },
   "dependencies": {
