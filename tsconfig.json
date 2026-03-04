@@ -1,25 +1,24 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "lib": ["ESNext"],
-    "declaration": true,
-    "sourceMap": true,
-    "outDir": "dist",
-    // Remove rootDir if it's strictly pointing to src, or set it to "."
-    "rootDir": ".", 
-    "strict": false,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "rootDir": ".",
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "strict": true,
+    "esModuleInterop": true
   },
-  "include": ["src/**/*.ts", "medusa-config.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*",
+    "medusa-config.ts" 
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
