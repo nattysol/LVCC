@@ -27,7 +27,7 @@ export default defineConfig({
     path: "/app",
   },
   modules: [
-    {
+    /*{
       resolve: "@medusajs/medusa/payment",
       options: {
         providers: [
@@ -42,5 +42,6 @@ export default defineConfig({
         ],
       },
     },
+    */
   ],
 })
