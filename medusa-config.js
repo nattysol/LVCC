@@ -1,16 +1,14 @@
 const { loadEnv, defineConfig } = require("@medusajs/framework/utils")
 const path = require("path")
 
-// Check if we are in the Cloud's special WORKDIR
-const isCloud = process.cwd().includes(".medusa/server")
+// Point the environment and logic to the internal server folder created during build
+const projectRoot = path.join(process.cwd(), ".medusa", "server")
+loadEnv(process.env.NODE_ENV || "development", projectRoot)
 
-// Load env from the current directory
-loadEnv(process.env.NODE_ENV || "development", process.cwd())
-
-const config = {
+// Use the local config if it exists, otherwise use the one in the server folder
+module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
-    redisUrl: process.env.REDIS_URL,
     http: {
       storeCors: process.env.STORE_CORS || "http://localhost:8000",
       adminCors: process.env.ADMIN_CORS || "http://localhost:7001",
@@ -27,6 +25,4 @@ const config = {
     path: "/app",
   },
   modules: [],
-}
-
-module.exports = defineConfig(config)
+})
