@@ -1,7 +1,8 @@
-// This file exists to help Medusa Cloud find the project in the /backend folder
-const path = require("path");
-const { loadEnv, defineConfig } = require("@medusajs/framework/utils");
+const { loadEnv, defineConfig } = require("@medusajs/framework/utils")
+const path = require("path")
 
-loadEnv(process.env.NODE_ENV || "development", path.resolve(__dirname, "backend"));
+// Load the environment variables from the backend folder
+loadEnv(process.env.NODE_ENV || "development", path.resolve(__dirname, "backend"))
 
-module.exports = require("./backend/medusa-config");
+// Export the configuration from the backend folder
+module.exports = require("./backend/medusa-config")
