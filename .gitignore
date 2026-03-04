@@ -9,3 +9,4 @@ coverage/
 dist/
 medusa-config.js.map
 medusa-config.d.ts
+.medusa/

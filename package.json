@@ -2,7 +2,7 @@
   "name": "lv-chocolate-backend",
   "version": "0.0.1",
   "description": "Medusa v2 Backend for Las Vegas Craft Chocolate",
-  "main": "medusa-config.js",
+  "main": "medusa-config.ts",
   "dependencies": {
     "@medusajs/admin-sdk": "^2.13.3",
     "@medusajs/cli": "^2.13.3",
@@ -15,9 +15,9 @@
   },
 "scripts": {
   "build": "medusa build",
-  "db:migrate": "medusa build && npx medusa db:migrate",
-  "start": "medusa start",
-  "predeploy": "medusa db:migrate"
+  "db:migrate": "npx medusa db:migrate",
+  "start": "npx medusa start",
+  "predeploy": "npx medusa build && npx medusa db:migrate"
 },
   "devDependencies": {
     "ts-node": "^10.9.2",
