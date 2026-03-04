@@ -15,7 +15,7 @@
   },
   "scripts": {
   "dev": "medusa develop",
-  "build": "medusa build",
+  "build": "medusa build && npx medusa db:migrate",
   "start": "medusa start",
   "db:migrate": "npx medusa db:migrate --config ./medusa-config.js"
 },
