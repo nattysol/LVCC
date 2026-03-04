@@ -1,12 +1,15 @@
 const { loadEnv, defineConfig } = require("@medusajs/framework/utils")
+const path = require("path")
 
-// Load environment variables
-loadEnv(process.env.NODE_ENV || "development", process.cwd())
+// Point the environment to the internal folder created during the build phase
+const projectRoot = path.join(process.cwd(), ".medusa", "server")
+loadEnv(process.env.NODE_ENV || "development", projectRoot)
 
 module.exports = defineConfig({
   projectConfig: {
-    // Database URL is required for the build to validate the schema
     databaseUrl: process.env.DATABASE_URL,
+    // Redis is recommended for production Medusa v2 setups
+    redisUrl: process.env.REDIS_URL,
     http: {
       storeCors: process.env.STORE_CORS || "http://localhost:8000",
       adminCors: process.env.ADMIN_CORS || "http://localhost:7001",
@@ -14,14 +17,15 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
-    // Required for cloud PG connections
+    // SSL is mandatory for most cloud-hosted PostgreSQL instances
     databaseDriverOptions: process.env.NODE_ENV !== "development" 
       ? { connection: { ssl: { rejectUnauthorized: false } } } 
       : {},
   },
-  // Ensure this block is present to avoid the 'reading admin' error
   admin: {
+    // Ensuring the admin block is not null prevents 'reading admin' errors
     disable: process.env.DISABLE_MEDUSA_ADMIN === "true",
+    path: "/app",
   },
   modules: [],
 })

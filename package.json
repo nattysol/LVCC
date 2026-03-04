@@ -1,27 +1,27 @@
 {
   "name": "lv-chocolate-backend",
   "version": "0.0.1",
-  "description": "Medusa v2 Backend for Las Vegas Craft Chocolate",
+  "description": "Medusa v2 Chocolate Store",
   "main": "medusa-config.js",
-  "dependencies": {
-    "@medusajs/admin-sdk": "^2.13.3",
-    "@medusajs/cli": "^2.13.3",
-    "@medusajs/dashboard": "^2.13.3",
-    "@medusajs/framework": "^2.13.3",
-    "@medusajs/js-sdk": "^2.13.3",
-    "@medusajs/medusa": "^2.13.3",
-    "@medusajs/payment-stripe": "^2.13.3",
-    "pg": "^8.11.0"
+  "engines": {
+    "node": ">=20.0.0"
   },
-"scripts": {
-  "build": "medusa build",
-  "start": "npx medusa start",
-  "db:migrate": "npx medusa db:migrate",
-  "predeploy": "npx medusa db:migrate"
-},
+  "scripts": {
+    "build": "medusa build",
+    "start": "cd .medusa/server && npx medusa start",
+    "db:migrate": "cd .medusa/server && npx medusa db:migrate",
+    "predeploy": "cd .medusa/server && npx medusa db:migrate"
+  },
+  "dependencies": {
+    "@medusajs/framework": "^2.0.0",
+    "@medusajs/medusa": "^2.0.0",
+    "@medusajs/admin-sdk": "^2.0.0",
+    "@medusajs/icons": "^2.0.0",
+    "@medusajs/ui": "^2.0.0",
+    "prismjs": "^1.29.0"
+  },
   "devDependencies": {
-    "ts-node": "^10.9.2",
+    "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
   }
-  
 }
