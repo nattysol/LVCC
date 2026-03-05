@@ -1,9 +1,9 @@
-import { loadEnv, defineConfig } from "@medusajs/framework/utils"
+const { loadEnv, defineConfig } = require("@medusajs/framework/utils")
 
 // Load environment variables
 loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
-export default defineConfig({
+module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     http: {
@@ -18,8 +18,8 @@ export default defineConfig({
       : {},
   },
   admin: {
-    disable: process.env.NODE_ENV === "production" ? false : false,
-    backendUrl: process.env.MEDUSA_BACKEND_URL,
+    disable: false,
+    path: "/app"
   },
   modules: []
 })
