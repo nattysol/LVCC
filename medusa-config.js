@@ -1,13 +1,7 @@
 const { loadEnv, defineConfig } = require("@medusajs/framework/utils")
-const path = require("path")
 
-const isServerFolder = process.cwd().includes(path.join(".medusa", "server"))
-const projectRoot = isServerFolder ? process.cwd() : path.join(process.cwd(), ".medusa", "server")
-
-loadEnv(process.env.NODE_ENV || "development", projectRoot)
-
-// Determine the base path for modules: 'dist' for production, 'src' for development
-const moduleBase = process.env.NODE_ENV === "production" ? "dist" : "src"
+// Load environment variables from the current directory
+loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
 module.exports = defineConfig({
   projectConfig: {
@@ -19,7 +13,9 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
-    databaseDriverOptions: { connection: { ssl: { rejectUnauthorized: false } } },
+    databaseDriverOptions: { 
+      connection: { ssl: { rejectUnauthorized: false } } 
+    },
   },
   admin: {
     disable: false,
@@ -27,10 +23,12 @@ module.exports = defineConfig({
   },
   modules: [
     {
-      resolve: "./dist/modules/production",
+      // We point directly to the source files. 
+      // Medusa's loader will handle the compilation at runtime/build.
+      resolve: "./src/modules/production",
     },
     {
-      resolve: "./dist/modules/formulation",
+      resolve: "./src/modules/formulation",
     },
   ],
 })

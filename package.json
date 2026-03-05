@@ -5,12 +5,11 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "scripts": {
+ "scripts": {
   "build": "npx medusa build",
-  "postbuild": "mkdir -p .medusa/server/dist && cp -r dist/* .medusa/server/dist/ && cp medusa-config.js .medusa/server/medusa-config.js && cp package.json .medusa/server/package.json || true",
-  "start": "cd .medusa/server && npx medusa start",
-  "db:migrate": "cd .medusa/server && npx medusa db:migrate",
-  "predeploy": "cd .medusa/server && npx medusa db:migrate"
+  "start": "npx medusa start",
+  "db:migrate": "npx medusa db:migrate",
+  "predeploy": "npx medusa db:migrate"
 },
   "dependencies": {
     "@medusajs/admin-sdk": "^2.5.1",
