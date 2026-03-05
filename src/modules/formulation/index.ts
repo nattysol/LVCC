@@ -1,8 +1,8 @@
 import { Module } from "@medusajs/framework/utils"
-import FormulationService from "./service"
+import FormulationModuleService from "./service"
 
-export const FORMULATION_MODULE = "formulation"
+export const FORMULATION_MODULE = "formulationModule"
 
 export default Module(FORMULATION_MODULE, {
-  service: FormulationService,
+  service: FormulationModuleService,
 })

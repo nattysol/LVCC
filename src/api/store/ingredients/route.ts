@@ -1,13 +1,19 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import  FormulationModuleService from "../../../modules/formulation/service"
+import { 
+  MedusaRequest, 
+  MedusaResponse 
+} from "@medusajs/framework/http"
+import { FORMULATION_MODULE } from "../../../modules/formulation"
 
 export const GET = async (
   req: MedusaRequest,
   res: MedusaResponse
 ) => {
-  const formulationService = req.scope.resolve("formulationModuleService") as FormulationModuleService
-  const ingredients = await formulationService.getIngredients()
+  const formulationModule = req.scope.resolve(FORMULATION_MODULE) as any
   
+  const ingredients = await formulationModule.listIngredients({
+    type: ["bean", "inclusion"]
+  })
+
   res.json({
     ingredients
   })

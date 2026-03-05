@@ -28,5 +28,14 @@ module.exports = defineConfig({
    path: "/app",
     disable: true, 
   },
-  modules: [],
+  modules: [
+    {
+      resolve: "./src/modules/production",
+      options: {},
+    },
+    {
+      resolve: "./src/modules/formulation",
+      options: {},
+    },
+  ]
 })
