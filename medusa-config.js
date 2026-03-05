@@ -25,6 +25,7 @@ module.exports = defineConfig({
   },
   admin: {
     // This stops the 'Could not find index.html' error
+   path: "/app",
     disable: true, 
   },
   modules: [],
