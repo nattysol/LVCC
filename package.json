@@ -7,6 +7,7 @@
   },
   "scripts": {
   "build": "npx medusa build",
+  "postbuild": "cp medusa-config.js .medusa/server/medusa-config.js && cp package.json .medusa/server/package.json",
   "start": "cd .medusa/server && npx medusa start",
   "db:migrate": "cd .medusa/server && npx medusa db:migrate",
   "predeploy": "cd .medusa/server && npx medusa db:migrate"
