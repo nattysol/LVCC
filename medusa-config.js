@@ -18,8 +18,8 @@ module.exports = defineConfig({
       : {},
   },
   admin: {
-    disable: false,
-    path: "/app"
+    disable: process.env.NODE_ENV === "production" ? false : false,
+    backendUrl: process.env.MEDUSA_BACKEND_URL,
   },
   // WE ARE TEMPORARILY CLEARING MODULES TO FIX THE CRASH
   modules: [],
