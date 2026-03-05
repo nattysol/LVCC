@@ -7,7 +7,7 @@
   },
 "scripts": {
     "build": "medusa build",
-    "postbuild": "cp package.json .medusa/server/package.json || true",
+    "postbuild": "mkdir -p .medusa/server/public/admin && cp package.json .medusa/server/ && cp -r dist .medusa/server/ && cp dist/medusa-config.js .medusa/server/ && cp -r build/public/admin/* .medusa/server/public/admin/ || true",
     "start": "medusa start",
     "dev": "medusa dev",
     "db:migrate": "medusa db:migrate",
