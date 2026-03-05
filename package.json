@@ -7,13 +7,13 @@
   },
 "scripts": {
     "build": "medusa build",
-    "postbuild": "mkdir -p .medusa/server/public/admin && cp package.json .medusa/server/ && cp medusa-config.* .medusa/server/ && cp -r dist .medusa/server/ 2>/dev/null || true",
+    "postbuild": "mkdir -p .medusa/server && cp package.json .medusa/server/ || true; cp -a dist/. .medusa/server/ 2>/dev/null || true; cp -a build/. .medusa/server/ 2>/dev/null || true",
     "start": "medusa start",
     "dev": "medusa dev",
     "db:migrate": "medusa db:migrate",
     "predeploy": "medusa db:migrate"
   },
-        "dependencies": {
+          "dependencies": {
     "@medusajs/admin-sdk": "^2.5.1",
     "@medusajs/cli": "^2.5.1",
     "@medusajs/framework": "^2.5.1",
