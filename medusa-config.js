@@ -1,6 +1,6 @@
 const { loadEnv, defineConfig } = require("@medusajs/framework/utils")
 
-// Load environment variables
+// Load environment variables from the root
 loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
 module.exports = defineConfig({
@@ -13,17 +13,18 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
-    databaseDriverOptions: process.env.NODE_ENV !== "development" 
-      ? { connection: { ssl: { rejectUnauthorized: false } } } 
-      : {},
+    // Required for Medusa Cloud PostgreSQL connections
+    databaseDriverOptions: { 
+      connection: { ssl: { rejectUnauthorized: false } } 
+    },
   },
   admin: {
     disable: false,
-    // Using a subpath for the admin dashboard helps production routing
     path: "/app"
   },
   modules: [
     {
+      // Point directly to the source directory for the builder to find
       resolve: "./src/modules/production",
     },
     {
