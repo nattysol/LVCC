@@ -21,13 +21,6 @@ module.exports = defineConfig({
     disable: false,
     path: "/app"
   },
-  modules: [
-    {
-      // Point directly to the source folder; Medusa handles the build resolution
-      resolve: "./src/modules/production",
-    },
-    {
-      resolve: "./src/modules/formulation",
-    }
-  ],
+  // WE ARE TEMPORARILY CLEARING MODULES TO FIX THE CRASH
+  modules: [],
 })
