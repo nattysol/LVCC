@@ -6,14 +6,16 @@
     "node": ">=20.0.0"
   },
  "scripts": {
-  "build": "npx medusa build",
-  "postbuild": "mkdir -p .medusa/server/.medusa/server/public && cp package.json .medusa/server/ && cp medusa-config.js .medusa/server/ && cp -r .medusa/server/public/admin .medusa/server/.medusa/server/public/ || true",
+  "build": "npx medusa build && npx medusa-admin build",
   "start": "npx medusa start",
   "db:migrate": "npx medusa db:migrate",
   "predeploy": "npx medusa db:migrate"
 },
   "dependencies": {
     "@medusajs/admin-sdk": "^2.5.1",
+    "@medusajs/admin-bundler": "^2.5.1",
+    "@medusajs/admin-shared": "^2.5.1",
+    "@medusajs/admin-ui": "^2.5.1",
     "@medusajs/cli": "^2.5.1",
     "@medusajs/framework": "^2.5.1",
     "@medusajs/medusa": "^2.5.1",
