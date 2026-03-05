@@ -7,7 +7,7 @@
   },
 "scripts": {
     "build": "medusa build",
-    "postbuild": "mkdir -p .medusa/server && cp package.json .medusa/server/ || true; cp -a dist/. .medusa/server/ 2>/dev/null || true; cp -a build/. .medusa/server/ 2>/dev/null || true",
+    "postbuild": "mkdir -p .medusa/server/public/admin; npx tsc medusa-config.ts --module commonjs || true; cp medusa-config.js .medusa/server/ || true; cp package.json .medusa/server/ || true; cp -a dist/. .medusa/server/ 2>/dev/null || true; cp -a build/. .medusa/server/public/admin/ 2>/dev/null || true; exit 0",
     "start": "medusa start",
     "dev": "medusa dev",
     "db:migrate": "medusa db:migrate",
