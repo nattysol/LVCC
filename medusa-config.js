@@ -1,14 +1,14 @@
 const { loadEnv, defineConfig } = require("@medusajs/framework/utils")
 const path = require("path")
 
-// 1. Determine if we are at the root or inside the server folder
+// 1. Identify the project root
 const isServerFolder = process.cwd().includes(path.join(".medusa", "server"))
 const projectRoot = isServerFolder ? process.cwd() : path.join(process.cwd(), ".medusa", "server")
 
-// 2. Load the environment for the project root
+// 2. Load environment variables
 loadEnv(process.env.NODE_ENV || "development", projectRoot)
 
-// 3. Define the config object
+// 3. Export the configuration
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
