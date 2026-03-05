@@ -27,11 +27,10 @@ module.exports = defineConfig({
   },
   modules: [
     {
-      // resolve dynamically points to src/ during build and dist/ during runtime
-      resolve: path.join(projectRoot, moduleBase, "modules", "production"),
+      resolve: "./dist/modules/production",
     },
     {
-      resolve: path.join(projectRoot, moduleBase, "modules", "formulation"),
+      resolve: "./dist/modules/formulation",
     },
   ],
 })
