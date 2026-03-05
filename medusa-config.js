@@ -24,7 +24,8 @@ module.exports = defineConfig({
       : {},
   },
   admin: {
-    disable: process.env.DISABLE_MEDUSA_ADMIN === "true",
+    // This stops the 'Could not find index.html' error
+    disable: true, 
   },
   modules: [],
 })
