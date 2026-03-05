@@ -1,9 +1,9 @@
-const { loadEnv, defineConfig } = require("@medusajs/framework/utils")
+import { loadEnv, defineConfig } from "@medusajs/framework/utils"
 
 // Load environment variables
 loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
-module.exports = defineConfig({
+export default defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     http: {
@@ -20,8 +20,6 @@ module.exports = defineConfig({
   admin: {
     disable: process.env.NODE_ENV === "production" ? false : false,
     backendUrl: process.env.MEDUSA_BACKEND_URL,
-    path: "/app"
   },
-  // WE ARE TEMPORARILY CLEARING MODULES TO FIX THE CRASH
-  modules: [],
+  modules: []
 })
