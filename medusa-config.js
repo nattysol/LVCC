@@ -2,13 +2,10 @@ const { loadEnv, defineConfig } = require("@medusajs/framework/utils");
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
-module.exports = defineConfig({
+const config = {
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
-    redisUrl: process.env.REDIS_URL,
-    databaseDriverOptions: process.env.NODE_ENV !== "development" 
-      ? { connection: { ssl: { rejectUnauthorized: false } } } 
-      : {},
+    redisUrl: process.env.REDIS_URL || "redis://localhost:6379",
     http: {
       storeCors: process.env.STORE_CORS || "http://localhost:8000",
       adminCors: process.env.ADMIN_CORS || "http://localhost:7001",
@@ -17,23 +14,16 @@ module.exports = defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
   },
+  admin: {
+    disable: false,
+  },
   modules: [
-    {
-      resolve: "@medusajs/medusa/event-bus-redis",
-      options: { redisUrl: process.env.REDIS_URL }
-    },
-    {
-      resolve: "@medusajs/medusa/cache-redis",
-      options: { redisUrl: process.env.REDIS_URL }
-    },
-    {
-      resolve: "@medusajs/medusa/workflow-engine-redis",
-      options: { redisUrl: process.env.REDIS_URL }
-    },
-    // Standard Medusa v2 relative paths
-    // The framework handles the src/dist swap automatically in most cases
-    { resolve: "./src/modules/production" },
+    /* { resolve: "./src/modules/production" },
     { resolve: "./src/modules/formulation" },
     { resolve: "./src/modules/document" }
-  ]
-});
+    */
+  ],
+};
+
+// Explicitly export the result of defineConfig
+module.exports = defineConfig(config);
