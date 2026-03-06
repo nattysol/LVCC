@@ -1,12 +1,6 @@
 const { loadEnv, defineConfig } = require("@medusajs/framework/utils");
-const path = require("path");
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
-
-// This helper ensures we use the correct absolute path regardless of environment
-const resolveModule = (relPath) => {
-  return path.resolve(process.cwd(), process.env.NODE_ENV === "production" ? "dist" : "src", "modules", relPath);
-};
 
 module.exports = defineConfig({
   projectConfig: {
@@ -36,9 +30,10 @@ module.exports = defineConfig({
       resolve: "@medusajs/medusa/workflow-engine-redis",
       options: { redisUrl: process.env.REDIS_URL }
     },
-    // We use the resolveModule helper to get the exact absolute path
-    { resolve: resolveModule("production") },
-    { resolve: resolveModule("formulation") },
-    { resolve: resolveModule("document") }
+    // Standard Medusa v2 relative paths
+    // The framework handles the src/dist swap automatically in most cases
+    { resolve: "./src/modules/production" },
+    { resolve: "./src/modules/formulation" },
+    { resolve: "./src/modules/document" }
   ]
 });
