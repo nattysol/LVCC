@@ -2,7 +2,8 @@ import {
   MedusaRequest, 
   MedusaResponse 
 } from "@medusajs/framework/http"
-import { FORMULATION_MODULE } from "../../../modules/formulation"
+// We explicitly point to the index file here to satisfy Node.js ESM rules
+import { FORMULATION_MODULE } from "../../../modules/formulation/index"
 
 export const GET = async (
   req: MedusaRequest,
