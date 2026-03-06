@@ -1,5 +1,5 @@
 import { Module } from "@medusajs/framework/utils"
-import ProductionModuleService from "./service"
+import ProductionModuleService from "./service.js"
 
 export const PRODUCTION_MODULE = "productionModule"
 

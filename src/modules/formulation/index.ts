@@ -1,5 +1,5 @@
 import { Module } from "@medusajs/framework/utils"
-import FormulationModuleService from "./service"
+import FormulationModuleService from "./service.js"
 
 export const FORMULATION_MODULE = "formulationModule"
 
