@@ -22,7 +22,7 @@ module.exports = defineConfig({
     backendUrl: process.env.MEDUSA_BACKEND_URL,
   },
   modules: [
-    // Core infrastructure for production stability
+    // Core infrastructure
     {
       resolve: "@medusajs/medusa/event-bus-redis",
       options: { redisUrl: process.env.REDIS_URL }
@@ -35,9 +35,9 @@ module.exports = defineConfig({
       resolve: "@medusajs/medusa/workflow-engine-redis",
       options: { redisUrl: process.env.REDIS_URL }
     },
-    // Custom Contract Manufacturing Modules
-    { resolve: "./src/modules/production" },
-    { resolve: "./src/modules/formulation" },
-    { resolve: "./src/modules/document" }
+    // Custom Modules - Now using the dynamic path
+    { resolve: `${moduleBase}/production` },
+    { resolve: `${moduleBase}/formulation` },
+    { resolve: `${moduleBase}/document` }
   ]
 });
