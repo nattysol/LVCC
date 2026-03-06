@@ -1,10 +1,12 @@
 const { loadEnv, defineConfig } = require("@medusajs/framework/utils");
+const path = require("path");
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
-// We use a cleaner check here to ensure we don't double-up on directory names
-const isProd = process.env.NODE_ENV === "production";
-const modulePath = isProd ? "./dist/modules" : "./src/modules";
+// This helper ensures we use the correct absolute path regardless of environment
+const resolveModule = (relPath) => {
+  return path.resolve(process.cwd(), process.env.NODE_ENV === "production" ? "dist" : "src", "modules", relPath);
+};
 
 module.exports = defineConfig({
   projectConfig: {
@@ -21,10 +23,6 @@ module.exports = defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
   },
-  admin: {
-    disable: process.env.NODE_ENV === "production" ? false : false,
-    backendUrl: process.env.MEDUSA_BACKEND_URL,
-  },
   modules: [
     {
       resolve: "@medusajs/medusa/event-bus-redis",
@@ -38,9 +36,9 @@ module.exports = defineConfig({
       resolve: "@medusajs/medusa/workflow-engine-redis",
       options: { redisUrl: process.env.REDIS_URL }
     },
-    // Using modulePath directly to avoid string template nesting issues
-    { resolve: modulePath + "/production" },
-    { resolve: modulePath + "/formulation" },
-    { resolve: modulePath + "/document" }
+    // We use the resolveModule helper to get the exact absolute path
+    { resolve: resolveModule("production") },
+    { resolve: resolveModule("formulation") },
+    { resolve: resolveModule("document") }
   ]
 });
