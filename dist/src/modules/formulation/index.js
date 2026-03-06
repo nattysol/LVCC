@@ -1,0 +1,7 @@
+import { Module } from "@medusajs/framework/utils";
+import FormulationModuleService from "./service.js";
+export const FORMULATION_MODULE = "formulationModule";
+export default Module(FORMULATION_MODULE, {
+    service: FormulationModuleService,
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi9zcmMvbW9kdWxlcy9mb3JtdWxhdGlvbi9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsTUFBTSxFQUFFLE1BQU0sMkJBQTJCLENBQUE7QUFDbEQsT0FBTyx3QkFBd0IsTUFBTSxjQUFjLENBQUE7QUFFbkQsTUFBTSxDQUFDLE1BQU0sa0JBQWtCLEdBQUcsbUJBQW1CLENBQUE7QUFFckQsZUFBZSxNQUFNLENBQUMsa0JBQWtCLEVBQUU7SUFDeEMsT0FBTyxFQUFFLHdCQUF3QjtDQUNsQyxDQUFDLENBQUEifQ==

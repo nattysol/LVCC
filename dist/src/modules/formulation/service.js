@@ -1,0 +1,9 @@
+import { MedusaService } from "@medusajs/framework/utils";
+import { Formulation, Ingredient } from "./models/formulation.js";
+class FormulationModuleService extends MedusaService({
+    Formulation,
+    Ingredient,
+}) {
+}
+export default FormulationModuleService;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VydmljZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NyYy9tb2R1bGVzL2Zvcm11bGF0aW9uL3NlcnZpY2UudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFFLGFBQWEsRUFBRSxNQUFNLDJCQUEyQixDQUFBO0FBQ3pELE9BQU8sRUFBRSxXQUFXLEVBQUUsVUFBVSxFQUFFLE1BQU0seUJBQXlCLENBQUE7QUFFakUsTUFBTSx3QkFBeUIsU0FBUSxhQUFhLENBQUM7SUFDbkQsV0FBVztJQUNYLFVBQVU7Q0FDWCxDQUFDO0NBQ0Q7QUFFRCxlQUFlLHdCQUF3QixDQUFBIn0=

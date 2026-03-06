@@ -1,0 +1,9 @@
+import { MedusaService } from "@medusajs/framework/utils";
+// Explicitly use .js extension for the internal model import
+import { ProductionBatch } from "./models/production-batch.js";
+class ProductionModuleService extends MedusaService({
+    ProductionBatch,
+}) {
+}
+export default ProductionModuleService;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VydmljZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NyYy9tb2R1bGVzL3Byb2R1Y3Rpb24vc2VydmljZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsYUFBYSxFQUFFLE1BQU0sMkJBQTJCLENBQUE7QUFDekQsNkRBQTZEO0FBQzdELE9BQU8sRUFBRSxlQUFlLEVBQUUsTUFBTSw4QkFBOEIsQ0FBQTtBQUU5RCxNQUFNLHVCQUF3QixTQUFRLGFBQWEsQ0FBQztJQUNsRCxlQUFlO0NBQ2hCLENBQUM7Q0FHRDtBQUVELGVBQWUsdUJBQXVCLENBQUEifQ==

@@ -1,0 +1,8 @@
+import { Module } from "@medusajs/framework/utils";
+// Explicitly use .js extension for the service import
+import ProductionModuleService from "./service.js";
+export const PRODUCTION_MODULE = "productionModule";
+export default Module(PRODUCTION_MODULE, {
+    service: ProductionModuleService,
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi9zcmMvbW9kdWxlcy9wcm9kdWN0aW9uL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBRSxNQUFNLEVBQUUsTUFBTSwyQkFBMkIsQ0FBQTtBQUNsRCxzREFBc0Q7QUFDdEQsT0FBTyx1QkFBdUIsTUFBTSxjQUFjLENBQUE7QUFFbEQsTUFBTSxDQUFDLE1BQU0saUJBQWlCLEdBQUcsa0JBQWtCLENBQUE7QUFFbkQsZUFBZSxNQUFNLENBQUMsaUJBQWlCLEVBQUU7SUFDdkMsT0FBTyxFQUFFLHVCQUF1QjtDQUNqQyxDQUFDLENBQUEifQ==

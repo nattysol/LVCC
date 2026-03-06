@@ -1,0 +1,9 @@
+import { model } from "@medusajs/framework/utils";
+export const Batch = model.define("batch", {
+    id: model.id().primaryKey(),
+    batch_number: model.text().unique(),
+    status: model.enum(["roasting", "conching", "tempering", "packaging", "completed"]).default("roasting"),
+    started_at: model.dateTime(),
+    formulation_id: model.text(),
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYmF0Y2guanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi9zcmMvbW9kdWxlcy9wcm9kdWN0aW9uL21vZGVscy9iYXRjaC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsS0FBSyxFQUFFLE1BQU0sMkJBQTJCLENBQUE7QUFFakQsTUFBTSxDQUFDLE1BQU0sS0FBSyxHQUFHLEtBQUssQ0FBQyxNQUFNLENBQUMsT0FBTyxFQUFFO0lBQ3pDLEVBQUUsRUFBRSxLQUFLLENBQUMsRUFBRSxFQUFFLENBQUMsVUFBVSxFQUFFO0lBQzNCLFlBQVksRUFBRSxLQUFLLENBQUMsSUFBSSxFQUFFLENBQUMsTUFBTSxFQUFFO0lBQ25DLE1BQU0sRUFBRSxLQUFLLENBQUMsSUFBSSxDQUFDLENBQUMsVUFBVSxFQUFFLFVBQVUsRUFBRSxXQUFXLEVBQUUsV0FBVyxFQUFFLFdBQVcsQ0FBQyxDQUFDLENBQUMsT0FBTyxDQUFDLFVBQVUsQ0FBQztJQUN2RyxVQUFVLEVBQUUsS0FBSyxDQUFDLFFBQVEsRUFBRTtJQUM1QixjQUFjLEVBQUUsS0FBSyxDQUFDLElBQUksRUFBRTtDQUM3QixDQUFDLENBQUEifQ==

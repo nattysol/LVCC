@@ -1,0 +1,12 @@
+import { model } from "@medusajs/framework/utils";
+export const ChocolateFormula = model.define("chocolate_formula", {
+    id: model.id().primaryKey(),
+    name: model.text(), // e.g., "Partner A - Signature Dark"
+    cocoa_percentage: model.number(), // 50-100
+    roast_profile: model.enum(["LIGHT", "MEDIUM", "DARK", "EXTRA_DARK"]),
+    bean_origin: model.text(), // e.g., "Madagascar Sambirano"
+    inclusions: model.json(), // e.g., ["Sea Salt", "Cocoa Nibs"]
+    moq: model.number().default(500), // Minimum Order Quantity
+    metadata: model.json().nullable(),
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY2hvY29sYXRlLWZvcm11bGEuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi9zcmMvbW9kdWxlcy9mb3JtdWxhdGlvbi9tb2RlbHMvY2hvY29sYXRlLWZvcm11bGEudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFFLEtBQUssRUFBRSxNQUFNLDJCQUEyQixDQUFBO0FBRWpELE1BQU0sQ0FBQyxNQUFNLGdCQUFnQixHQUFHLEtBQUssQ0FBQyxNQUFNLENBQUMsbUJBQW1CLEVBQUU7SUFDaEUsRUFBRSxFQUFFLEtBQUssQ0FBQyxFQUFFLEVBQUUsQ0FBQyxVQUFVLEVBQUU7SUFDM0IsSUFBSSxFQUFFLEtBQUssQ0FBQyxJQUFJLEVBQUUsRUFBRSxxQ0FBcUM7SUFDekQsZ0JBQWdCLEVBQUUsS0FBSyxDQUFDLE1BQU0sRUFBRSxFQUFFLFNBQVM7SUFDM0MsYUFBYSxFQUFFLEtBQUssQ0FBQyxJQUFJLENBQUMsQ0FBQyxPQUFPLEVBQUUsUUFBUSxFQUFFLE1BQU0sRUFBRSxZQUFZLENBQUMsQ0FBQztJQUNwRSxXQUFXLEVBQUUsS0FBSyxDQUFDLElBQUksRUFBRSxFQUFFLCtCQUErQjtJQUMxRCxVQUFVLEVBQUUsS0FBSyxDQUFDLElBQUksRUFBRSxFQUFFLG1DQUFtQztJQUM3RCxHQUFHLEVBQUUsS0FBSyxDQUFDLE1BQU0sRUFBRSxDQUFDLE9BQU8sQ0FBQyxHQUFHLENBQUMsRUFBRSx5QkFBeUI7SUFDM0QsUUFBUSxFQUFFLEtBQUssQ0FBQyxJQUFJLEVBQUUsQ0FBQyxRQUFRLEVBQUU7Q0FDbEMsQ0FBQyxDQUFBIn0=
