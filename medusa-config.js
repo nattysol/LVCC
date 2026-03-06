@@ -1,11 +1,16 @@
 const { loadEnv, defineConfig } = require("@medusajs/framework/utils");
 
+// 1. Load environment variables
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
+
+// 2. DEFINE moduleBase (This is the part that was missing!)
+const isDev = process.env.NODE_ENV === "development";
+const moduleBase = isDev ? "./src/modules" : "./dist/modules";
 
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
-    redisUrl: process.env.REDIS_URL, // Required for B2B Workflows
+    redisUrl: process.env.REDIS_URL,
     databaseDriverOptions: process.env.NODE_ENV !== "development" 
       ? { connection: { ssl: { rejectUnauthorized: false } } } 
       : {},
@@ -35,7 +40,7 @@ module.exports = defineConfig({
       resolve: "@medusajs/medusa/workflow-engine-redis",
       options: { redisUrl: process.env.REDIS_URL }
     },
-    // Custom Modules - Now using the dynamic path
+    // Custom Modules using the dynamic path
     { resolve: `${moduleBase}/production` },
     { resolve: `${moduleBase}/formulation` },
     { resolve: `${moduleBase}/document` }
