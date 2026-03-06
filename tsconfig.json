@@ -16,7 +16,7 @@
   "include": [
     "src/**/*",
     "medusa-config.js" 
-  ],
+, "storefront/types.ts"  ],
   "exclude": [
     "node_modules",
     "dist"

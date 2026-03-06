@@ -1,11 +1,11 @@
 const { loadEnv, defineConfig } = require("@medusajs/framework/utils");
 
-// Load environment variables
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    redisUrl: process.env.REDIS_URL, // Required for B2B Workflows
     databaseDriverOptions: process.env.NODE_ENV !== "development" 
       ? { connection: { ssl: { rejectUnauthorized: false } } } 
       : {},
@@ -21,5 +21,23 @@ module.exports = defineConfig({
     disable: process.env.NODE_ENV === "production" ? false : false,
     backendUrl: process.env.MEDUSA_BACKEND_URL,
   },
-  modules: []
+  modules: [
+    // Core infrastructure for production stability
+    {
+      resolve: "@medusajs/medusa/event-bus-redis",
+      options: { redisUrl: process.env.REDIS_URL }
+    },
+    {
+      resolve: "@medusajs/medusa/cache-redis",
+      options: { redisUrl: process.env.REDIS_URL }
+    },
+    {
+      resolve: "@medusajs/medusa/workflow-engine-redis",
+      options: { redisUrl: process.env.REDIS_URL }
+    },
+    // Custom Contract Manufacturing Modules
+    { resolve: "./src/modules/production" },
+    { resolve: "./src/modules/formulation" },
+    { resolve: "./src/modules/document" }
+  ]
 });
