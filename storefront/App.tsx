@@ -17,7 +17,7 @@ import {
   User
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { medusa } from '../storefront/lib/medusa';
+import { medusa } from './lib/medusa';
 import { Batch, Ingredient } from './types';
 
 const STAGES = [
