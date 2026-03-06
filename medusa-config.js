@@ -21,13 +21,11 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
-  },
-  admin: {
+  },  admin: {
     disable: process.env.NODE_ENV === "production" ? false : false,
     backendUrl: process.env.MEDUSA_BACKEND_URL,
   },
   modules: [
-    // Core infrastructure
     {
       resolve: "@medusajs/medusa/event-bus-redis",
       options: { redisUrl: process.env.REDIS_URL }
@@ -40,7 +38,7 @@ module.exports = defineConfig({
       resolve: "@medusajs/medusa/workflow-engine-redis",
       options: { redisUrl: process.env.REDIS_URL }
     },
-    // Custom Modules using the dynamic path
+    // This will now correctly resolve to ./dist/modules/production on the cloud
     { resolve: `${moduleBase}/production` },
     { resolve: `${moduleBase}/formulation` },
     { resolve: `${moduleBase}/document` }
