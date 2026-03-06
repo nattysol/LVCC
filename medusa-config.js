@@ -1,11 +1,10 @@
 const { loadEnv, defineConfig } = require("@medusajs/framework/utils");
 
-// 1. Load environment variables
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
-// 2. DEFINE moduleBase (This is the part that was missing!)
-const isDev = process.env.NODE_ENV === "development";
-const moduleBase = isDev ? "./src/modules" : "./dist/modules";
+// We use a cleaner check here to ensure we don't double-up on directory names
+const isProd = process.env.NODE_ENV === "production";
+const modulePath = isProd ? "./dist/modules" : "./src/modules";
 
 module.exports = defineConfig({
   projectConfig: {
@@ -21,7 +20,8 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
-  },  admin: {
+  },
+  admin: {
     disable: process.env.NODE_ENV === "production" ? false : false,
     backendUrl: process.env.MEDUSA_BACKEND_URL,
   },
@@ -38,9 +38,9 @@ module.exports = defineConfig({
       resolve: "@medusajs/medusa/workflow-engine-redis",
       options: { redisUrl: process.env.REDIS_URL }
     },
-    // This will now correctly resolve to ./dist/modules/production on the cloud
-    { resolve: `${moduleBase}/production` },
-    { resolve: `${moduleBase}/formulation` },
-    { resolve: `${moduleBase}/document` }
+    // Using modulePath directly to avoid string template nesting issues
+    { resolve: modulePath + "/production" },
+    { resolve: modulePath + "/formulation" },
+    { resolve: modulePath + "/document" }
   ]
 });
