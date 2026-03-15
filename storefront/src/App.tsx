@@ -102,11 +102,23 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
 const MEDUSA_ADMIN_TOKEN = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN;
 const MEDUSA_BASE_URL = import.meta.env.VITE_MEDUSA_BASE_URL || "https://chocolate.medusajs.app";
 
-const getAdminHeaders = () => ({
-  "Content-Type": "application/json",
-  "Authorization": `Bearer ${MEDUSA_ADMIN_TOKEN}` // This is the master key
-});
-
+const getAdminHeaders = () => {
+  const token = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN;
+  
+  // If using a Secret Key (sk_)
+  if (token?.startsWith('sk_')) {
+    return {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    };
+  }
+  
+  // If using a Publishable Key (pk_) - Common for frontends
+  return {
+    "Content-Type": "application/json",
+    "x-publishable-api-key": token 
+  };
+};
 const MedusaService = {
   // PULLS THE INGREDIENTS/RAW MATERIALS
   getProducts: async () => {
