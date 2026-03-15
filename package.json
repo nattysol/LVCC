@@ -21,10 +21,13 @@
     "@medusajs/framework": "^2.13.3",
     "@medusajs/medusa": "^2.5.1",
     "@medusajs/utils": "^2.13.3",
-    "@medusajs/workflow-engine-redis": "^2.13.3"
+    "@medusajs/workflow-engine-redis": "^2.13.3",
+    "@tailwindcss/vite": "^4.2.1"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }

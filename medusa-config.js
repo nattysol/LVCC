@@ -4,18 +4,18 @@ loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
 const config = {
   projectConfig: {
-    databaseUrl: process.env.DATABASE_URL,
+    databaseUrl: process.env.DATABASE_URL || "postgres://localhost/medusa-db",
     redisUrl: process.env.REDIS_URL || "redis://localhost:6379",
     http: {
-      storeCors: process.env.STORE_CORS || "http://localhost:8000",
-      adminCors: process.env.ADMIN_CORS || "http://localhost:7001",
+      storeCors: process.env.STORE_CORS || "http://localhost:3000",
+      adminCors: process.env.ADMIN_CORS || "http://localhost:3000",
       authCors: process.env.AUTH_CORS || "http://localhost:7001",
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
   },
   admin: {
-    disable: false,
+    disable: false, 
   },
   modules: [
     /* { resolve: "./src/modules/production" },
