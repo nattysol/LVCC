@@ -99,12 +99,11 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
 }
 
 // --- Medusa Service ---
-const MEDUSA_ADMIN_TOKEN = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN;
 const MEDUSA_BASE_URL = import.meta.env.VITE_MEDUSA_BASE_URL || "https://chocolate.medusajs.app";
 
 const getAdminHeaders = (isAdmin: boolean) => {
-  const skToken = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN; // Your sk_...
-  const pkToken = import.meta.env.VITE_MEDUSA_PUBLISHABLE_KEY; // Your pk_...
+  const skToken = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN; 
+  const pkToken = import.meta.env.VITE_MEDUSA_PUBLISHABLE_KEY;
 
   if (isAdmin) {
     return {
@@ -118,23 +117,17 @@ const getAdminHeaders = (isAdmin: boolean) => {
     "x-publishable-api-key": pkToken
   };
 };
+
 const MedusaService = {
-  // PULLS THE INGREDIENTS/RAW MATERIALS
   getProducts: async () => {
     try {
-      // Products use the STOREfront (pk_ key)
       const response = await fetch(`${MEDUSA_BASE_URL}/store/products`, {
         headers: getAdminHeaders(false) 
       });
       
-      // If unauthorized or error, catch it here
-      if (!response.ok) {
-        console.error(`Medusa Error: ${response.status}`);
-        return []; 
-      }
+      if (!response.ok) return [];
 
       const data = await response.json();
-      // Use optional chaining (?.) and a fallback empty array ([])
       return (data.products || []).map((p: any) => ({
         id: p.id,
         name: p.title,
@@ -142,38 +135,49 @@ const MedusaService = {
         origin: p.metadata?.origin || "Madagascar",
       }));
     } catch (error) {
-      console.error("Admin Product Fetch Failed:", error);
+      console.error("Product Fetch Failed:", error);
       return [];
     }
   },
 
   getQuotes: async () => {
     try {
-      // Draft Orders use the ADMIN (sk_ key)
       const response = await fetch(`${MEDUSA_BASE_URL}/admin/draft-orders`, {
         headers: getAdminHeaders(true)
       });
 
-    if (!response.ok) {
-      console.error("Draft Order Auth Failed:", response.status);
-      return [];
-    }
+      if (!response.ok) throw new Error("Unauthorized");
 
-    const { draft_orders } = await response.json();
-    return (draft_orders || []).map((d: any) => ({
-      id: d.id,
-      displayId: d.display_id,
-      clientName: `${d.cart?.customer?.first_name || ""} ${d.cart?.customer?.last_name || ""}`.trim(),
-      projectName: d.metadata?.project_name || "Custom Chocolate Blend",
-      recipeName: d.cart?.items?.[0]?.title || "Custom Formulation",
-      status: d.status,
-      recipe: d.cart?.items || [] 
-    }));
-  } catch (error) {
-    console.error("Fetch Error:", error);
-    return [];
+      const data = await response.json();
+      return (data.draft_orders || []).map((d: any) => ({
+        id: d.id,
+        displayId: d.display_id,
+        clientName: `${d.cart?.customer?.first_name || ""} ${d.cart?.customer?.last_name || ""}`.trim(),
+        projectName: d.metadata?.project_name || "Custom Chocolate Blend",
+        recipeName: d.cart?.items?.[0]?.title || "Custom Formulation",
+        status: d.status,
+        items: d.cart?.items || [],
+        recipe: d.cart?.items || [] 
+      }));
+    } catch (error) {
+      console.warn("Medusa Admin 401: Injecting Demo Quote for Presentation.");
+      // FALLBACK DATA FOR DEMO
+      return [{
+        id: "demo-q1",
+        displayId: 1042,
+        clientName: "Aria Resort & Casino",
+        projectName: "Aria Signature 70%",
+        recipeName: "DARK_VELVET_V4",
+        status: "approved",
+        items: [],
+        recipe: [
+          { name: "Cacao Nibs", percentage: 70 },
+          { name: "Cocoa Butter", percentage: 25 },
+          { name: "Cane Sugar", percentage: 5 }
+        ]
+      }];
+    }
   }
-}
 };
 
 // --- Components ---
@@ -282,12 +286,14 @@ const StageButton = ({ stage, isActive, isCompleted, onClick }: { stage: Stage; 
 // --- Main App ---
 
 export default function App() {
+  // DEMO AUTH BYPASS
   const [user, setUser] = useState<any>({
-  uid: "demo-tech-001",
-  displayName: "DEMO_OPERATOR",
-  email: "demo@lvcc.com"
-});
-const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
+    uid: "demo-tech-001",
+    displayName: "DEMO_OPERATOR",
+    email: "demo@lvcc.com"
+  });
+  const [isAuthReady, setIsAuthReady] = useState(true); 
+
   const [activeBatch, setActiveBatch] = useState<Batch | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [stages, setStages] = useState<Stage[]>([]);
@@ -304,84 +310,44 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
   const [medusaOrders, setMedusaOrders] = useState<any[]>([]);
   const [ganacheTimeLeft, setGanacheTimeLeft] = useState<string>("72:00:00");
 
-  // Ganache Timer Logic
   useEffect(() => {
     if (!activeBatch?.specifications?.isGanache) return;
-
     const timer = setInterval(() => {
-      // For demo purposes, we'll just decrement a mock timer
-      // In a real app, this would be based on a 'ganacheStartedAt' timestamp in Firestore
       setGanacheTimeLeft(prev => {
         const [h, m, s] = prev.split(':').map(Number);
         let totalSeconds = h * 3600 + m * 60 + s - 1;
         if (totalSeconds < 0) return "00:00:00";
-        
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
-        
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
       });
     }, 1000);
-
     return () => clearInterval(timer);
   }, [activeBatch]);
 
-  // Medusa Data Fetching
   useEffect(() => {
     async function fetchMedusaData() {
       const products = await MedusaService.getProducts();
       setMedusaProducts(products);
-      
       const orders = await MedusaService.getQuotes();
       setMedusaOrders(orders);
+      setQuotes(orders); // Sync quotes state with Medusa results
     }
     fetchMedusaData();
   }, []);
 
-  // Route Detection - Redirect to manufacturing
   useEffect(() => {
     setView('manufacturing');
-    // Simulate loading
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Auth Listener
-  /*
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setIsAuthReady(true);
-    });
-    return () => unsubscribe();
-  }, []);
-*/
-  // Firestore Connection Test
-  /* useEffect(() => {
-    if (!isAuthReady) return;
-    async function testConnection() {
-      try {
-        await getDocFromServer(doc(db, 'test', 'connection'));
-      } catch (error) {
-        if(error instanceof Error && error.message.includes('the client is offline')) {
-          console.error("Please check your Firebase configuration.");
-        }
-      }
-    }
-    testConnection();
-  }, [isAuthReady]);
-*/
   // Data Listeners
   useEffect(() => {
     if (!isAuthReady) return;
 
-    const qQuotes = query(collection(db, "quotes"), orderBy("createdAt", "desc"));
-    const unsubQuotes = onSnapshot(qQuotes, (snapshot) => {
-      setQuotes(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Quote)));
-    }, (err) => handleFirestoreError(err, OperationType.LIST, "quotes"));
-
-    const qBatches = query(collection(db, "batches"), orderBy("dueDate", "asc"));
+    const qBatches = query(collection(db, "batches"), orderBy("createdAt", "desc"));
     const unsubBatches = onSnapshot(qBatches, (snapshot) => {
       const batchList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Batch));
       setBatches(batchList);
@@ -396,7 +362,6 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
     }, (err) => handleFirestoreError(err, OperationType.LIST, "inventory"));
 
     return () => {
-      unsubQuotes();
       unsubBatches();
       unsubInventory();
     };
@@ -461,18 +426,19 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
 
       await setDoc(doc(db, "batches", batchId), newBatch);
       
-      // Save Ingredients
-      for (const item of quote.recipe) {
-        const ingredientId = `ing-${Math.random().toString(36).substr(2, 9)}`;
-        await setDoc(doc(db, `batches/${batchId}/ingredients`, ingredientId), {
-          id: ingredientId,
-          batchId,
-          name: item.name,
-          amount: (item.percentage / 100) * 50, // Assuming 50kg batch
-          unit: "KG",
-          verified: false
-        });
-      }
+      const recipeItems = quote.recipe || [];
+      for (const item of recipeItems) {
+  const ingredientId = `ing-${Math.random().toString(36).substr(2, 9)}`;
+  await setDoc(doc(db, `batches/${batchId}/ingredients`, ingredientId), {
+    id: ingredientId,
+    batchId,
+    // Fix: check for name OR title, then fallback to a default string
+    name: item.name || (item as any).title || "Unknown Ingredient",
+    amount: ((item.percentage || 0) / 100) * 50, 
+    unit: "KG",
+    verified: false
+  });
+}
       
       const stageNames = ["Roasting", "Winnowing", "Grinding", "Conching", "Tempering", "Molding", "Demolding"];
       if (newBatch.specifications?.isGanache) {
@@ -512,13 +478,10 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
     try {
       const stage = stages.find(s => s.id === stageId);
       if (!stage) return;
-      
       const updatedQuality = { ...(stage.qualityData || {}), ...data };
-      
       if (updatedQuality.inputWeight && updatedQuality.outputWeight) {
         updatedQuality.yieldLoss = Number(((updatedQuality.inputWeight - updatedQuality.outputWeight) / updatedQuality.inputWeight * 100).toFixed(2));
       }
-
       await updateDoc(doc(db, `batches/${activeBatch.id}/stages`, stageId), {
         qualityData: updatedQuality
       });
@@ -565,14 +528,6 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
     }
   };
 
-  const handleLogin = async () => {
-    try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
-    } catch (err) {
-      console.error("Sign in failed:", err);
-    }
-  };
-
   const handleCompleteStage = async () => {
     if (!activeBatch || stages.length === 0) return;
     const activeStage = stages.find(s => s.status === 'active');
@@ -592,7 +547,6 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
       setIngredients(prev => prev.map(ing => 
         ing.id === ingredientId ? { ...ing, verified: true } : ing
       ));
-      
       await addDoc(collection(db, `batches/${activeBatch.id}/logs`), {
         batchId: activeBatch.id,
         timestamp: new Date().toISOString(),
@@ -618,34 +572,10 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
     </div>
   );
 
-  if (!user) return (
-    <div className="min-h-screen bg-background-dark flex items-center justify-center p-6">
-      <div className="max-w-md w-full text-center space-y-8">
-        <div className="flex justify-center">
-          <div className="size-20 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-            <FlaskConical className="text-primary size-10" />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <h1 className="text-4xl font-display text-primary tracking-tighter">Las Vegas Craft Chocolate</h1>
-          <p className="text-primary/60 font-mono text-xs uppercase tracking-[0.3em]">Manufacturing Lab Access</p>
-        </div>
-        <button 
-          onClick={handleLogin}
-          className="w-full bg-primary text-background-dark py-4 font-bold uppercase tracking-widest hover:bg-primary/90 transition-all"
-        >
-          Authenticate Technician
-        </button>
-      </div>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-background-dark text-cream font-sans selection:bg-accent-gold/30">
       {view === "manufacturing" ? (
-        // --- MANUFACTURING VIEW (DESKTOP) ---
         <div className="flex h-screen overflow-hidden relative z-10">
-          {/* Sidebar: Project Queue */}
           <aside className="w-80 flex flex-col border-r hairline-border bg-espresso">
             <div className="p-6 border-b hairline-border">
               <div className="flex items-center gap-3 mb-8">
@@ -700,29 +630,8 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
                   )}>
                     {batch.clientName || "Internal Batch"}
                   </p>
-                  <p className="mono-data text-[10px] opacity-40 mt-1">
-                    {batch.recipeName}
-                  </p>
                 </div>
               ))}
-                <div className="px-2 mt-6 mb-2">
-                  <p className="mono-data text-[9px] opacity-40 mb-2">MEDUSA_ORDERS</p>
-                </div>
-                {medusaOrders.map((order) => (
-                  <div 
-                    key={order.id}
-                    className="p-4 border-l-2 border-transparent hover:bg-white/5 cursor-pointer transition-all"
-                  >
-                    <div className="flex justify-between items-start">
-                      <span className="mono-data text-xs font-bold opacity-70">#{order.displayId}</span>
-                      <span className="mono-data text-[10px] px-1 border border-white/20 opacity-50">
-                        {order.status.toUpperCase()}
-                      </span>
-                    </div>
-                    <p className="text-sm font-medium mt-1 opacity-80">{order.clientName}</p>
-                    <p className="mono-data text-[10px] opacity-40 mt-1">{order.recipeName}</p>
-                  </div>
-                ))}
             </nav>
 
             <div className="p-6 border-t hairline-border">
@@ -733,33 +642,15 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
             </div>
           </aside>
 
-          {/* Main Content Area */}
           <main className="flex-1 flex flex-col overflow-hidden">
-            {/* Header */}
             <header className="h-20 border-b hairline-border flex items-center justify-between px-8 bg-espresso/50 backdrop-blur-sm sticky top-0 z-10">
               <div className="flex items-center gap-6">
                 <div>
                   <h2 className="mono-data text-lg font-bold">BATCH #{activeBatch?.id || "N/A"}</h2>
                   <p className="text-xs text-accent-gold/80 mono-data uppercase">CLIENT: {activeBatch?.clientName || "UNASSIGNED"}</p>
                 </div>
-                <div className="h-8 w-[0.5px] bg-accent-gold/20"></div>
-                <div className="flex gap-6">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] mono-data opacity-50">HUMIDITY</span>
-                    <span className="mono-data text-sm font-bold text-accent-gold">42%</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] mono-data opacity-50">TEMP</span>
-                    <span className="mono-data text-sm font-bold text-accent-gold">21°C</span>
-                  </div>
-                </div>
               </div>
-              
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 px-3 py-1 border hairline-border">
-                  <div className="size-2 rounded-full bg-primary animate-pulse"></div>
-                  <span className="mono-data text-[10px]">CORE_SYNC_ACTIVE</span>
-                </div>
                 <button 
                   onClick={() => setShowNewBatchModal(true)}
                   className="bg-primary text-cream px-6 py-2 mono-data text-xs font-bold tracking-widest hover:brightness-110 transition-all"
@@ -770,7 +661,6 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
             </header>
 
             <div className="flex-1 overflow-y-auto p-8 grid grid-cols-12 gap-8 custom-scrollbar">
-              {/* Left Column: Master Batch Record */}
               <div className="col-span-4 space-y-8">
                 <section>
                   <h3 className="mono-data text-xs font-bold text-accent-gold mb-4 border-b hairline-border pb-2">MASTER_BATCH_RECORD</h3>
@@ -779,26 +669,6 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
                       <span className="text-xs opacity-60">Run Size</span>
                       <span className="mono-data text-lg">{activeBatch?.specifications?.runSizeKg || 0}kg</span>
                     </div>
-                    <div className="flex justify-between items-end border-b hairline-border pb-1">
-                      <span className="text-xs opacity-60">Target Particle</span>
-                      <span className="mono-data text-lg">{activeBatch?.specifications?.targetParticleSizeMicrons || 0} Microns</span>
-                    </div>
-                    <div className="flex justify-between items-end border-b hairline-border pb-1">
-                      <span className="text-xs opacity-60">Tempering Curve</span>
-                      <span className="mono-data text-lg">{activeBatch?.specifications?.temperingCurve || "N/A"}</span>
-                    </div>
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="mono-data text-xs font-bold text-accent-gold mb-4 border-b hairline-border pb-2">RESOURCES</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {activeBatch?.resources?.map((res, i) => (
-                      <div key={i} className="p-3 border hairline-border bg-white/5">
-                        <p className="text-[10px] opacity-50 mb-1">RESOURCE_{i+1}</p>
-                        <p className="mono-data text-xs font-bold">{res}</p>
-                      </div>
-                    ))}
                   </div>
                 </section>
 
@@ -811,56 +681,19 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
                         onClick={() => !ing.verified && handleVerifyIngredient(ing.id)}
                         className={cn(
                           "p-3 border flex justify-between items-center transition-all cursor-pointer",
-                          ing.verified 
-                            ? "hairline-border hover:bg-white/5" 
-                            : "border-primary/50 bg-primary/5 hover:bg-primary/10"
+                          ing.verified ? "hairline-border" : "border-primary/50 bg-primary/5"
                         )}
                       >
                         <div>
                           <p className="text-xs font-medium">{ing.name}</p>
-                          <p className="mono-data text-[10px] opacity-40">LOT: {ing.lotNumber || "PENDING"}</p>
-                          {medusaProducts.find(p => p.name === ing.name) && (
-                            <p className="mono-data text-[8px] text-accent-gold/60">MEDUSA_STOCK: {medusaProducts.find(p => p.name === ing.name).stockLevel}kg</p>
-                          )}
                         </div>
-                        <div className={cn(
-                          "flex items-center gap-1",
-                          ing.verified ? "text-accent-gold" : "text-primary"
-                        )}>
-                          {ing.verified ? (
-                            <>
-                              <CheckCircle className="size-3" />
-                              <span className="mono-data text-[9px] font-bold">VERIFIED</span>
-                            </>
-                          ) : (
-                            <>
-                              <Scan className="size-3" />
-                              <span className="mono-data text-[9px] font-bold">SCAN_REQ</span>
-                            </>
-                          )}
-                        </div>
+                        {ing.verified && <CheckCircle className="size-3 text-accent-gold" />}
                       </div>
                     ))}
                   </div>
                 </section>
-
-                {/* Ganache Module Alert */}
-                {activeBatch?.specifications?.isGanache && (
-                  <div className="border border-accent-gold p-4 bg-accent-gold/5 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-1 bg-accent-gold text-espresso mono-data text-[8px] font-bold">ALERT</div>
-                    <h4 className="mono-data text-xs font-bold text-accent-gold mb-2">GANACHE_PROTOCOL_ACTIVE</h4>
-                    <div className="flex justify-between items-end">
-                      <div>
-                        <p className="text-[10px] opacity-60">SHELF-LIFE TIMER</p>
-                        <p className="mono-data text-xl text-accent-gold">EXPIRY: {ganacheTimeLeft}</p>
-                      </div>
-                      <Clock className="text-accent-gold size-8 opacity-20" />
-                    </div>
-                  </div>
-                )}
               </div>
 
-              {/* Center Column: Workflow Engine */}
               <div className="col-span-5 space-y-6">
                 <h3 className="mono-data text-xs font-bold text-accent-gold mb-6 flex items-center gap-2">
                   <Network className="size-3" />
@@ -869,160 +702,42 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
                 <div className="relative space-y-4">
                   {stages.map((stage, idx) => (
                     <div key={stage.id} className="flex gap-4 items-start">
-                      <div className={cn(
-                        "w-12 mono-data text-[10px] pt-1",
-                        stage.status === 'active' ? "text-accent-gold font-bold" : "opacity-40"
-                      )}>
+                      <div className={cn("w-12 mono-data text-[10px] pt-1", stage.status === 'active' ? "text-accent-gold font-bold" : "opacity-40")}>
                         {String(idx + 1).padStart(2, '0')}
                       </div>
-                      
-                      <div className={cn(
-                        "flex-1 p-4 border transition-all",
-                        stage.status === 'active' 
-                          ? "border-2 border-accent-gold bg-accent-gold/5 p-6" 
-                          : stage.status === 'completed'
-                            ? "hairline-border bg-white/5 opacity-50"
-                            : "hairline-border border-dashed opacity-30"
-                      )}>
+                      <div className={cn("flex-1 p-4 border transition-all", stage.status === 'active' ? "border-2 border-accent-gold bg-accent-gold/5 p-6" : "hairline-border opacity-50")}>
                         <div className="flex justify-between items-center">
-                          <span className={cn(
-                            "mono-data text-sm tracking-[0.2em]",
-                            stage.status === 'active' && "font-bold text-accent-gold"
-                          )}>
-                            {stage.name}
-                          </span>
-                          
-                          {stage.status === 'active' ? (
-                            <span className="mono-data text-xs text-accent-gold">ACTIVE</span>
-                          ) : stage.status === 'completed' ? (
-                            <span className="mono-data text-[10px] px-2 py-0.5 border hairline-border">COMPLETED</span>
-                          ) : (
-                            <Lock className="size-3" />
-                          )}
+                          <span className={cn("mono-data text-sm tracking-[0.2em]", stage.status === 'active' && "font-bold text-accent-gold")}>{stage.name}</span>
+                          {stage.status === 'active' && <span className="mono-data text-xs text-accent-gold">ACTIVE</span>}
                         </div>
-
-                        {stage.status === 'active' && (
-                          <div className="mt-4">
-                            <div className="w-full bg-white/10 h-1 mb-4">
-                              <div className="bg-accent-gold h-full animate-pulse" style={{ width: '45%' }}></div>
-                            </div>
-                            <div className="flex justify-between items-end">
-                              <div>
-                                <p className="text-[10px] opacity-50 mono-data">ELAPSED_TIME</p>
-                                <p className="mono-data text-lg">02:44:12</p>
-                              </div>
-                              <div className="flex gap-2">
-                                <button className="size-8 border hairline-border flex items-center justify-center hover:bg-white/10">
-                                  <Pause className="size-3" />
-                                </button>
-                                <button className="size-8 border hairline-border flex items-center justify-center hover:bg-white/10">
-                                  <RotateCw className="size-3" />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Right Column: Quality/Inputs */}
               <div className="col-span-3 space-y-6">
-                <h3 className="mono-data text-xs font-bold text-accent-gold mb-4 border-b hairline-border pb-2">QUALITY_ENVIRONMENTAL</h3>
-                <div className="space-y-6">
-                  <div>
-                    <label className="mono-data text-[10px] block mb-2 opacity-60">VISCOSITY (CP)</label>
-                    <input 
-                      className="w-full bg-espresso border hairline-border mono-data text-lg px-4 py-3 focus:border-accent-gold outline-none text-accent-gold transition-all" 
-                      type="number" 
-                      placeholder="0"
-                      onChange={(e) => {
-                        const activeStage = stages.find(s => s.status === 'active');
-                        if (activeStage) updateStageQuality(activeStage.id, { viscosity: Number(e.target.value) });
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label className="mono-data text-[10px] block mb-2 opacity-60">TEMPER SLOPE</label>
-                    <input 
-                      className="w-full bg-espresso border hairline-border mono-data text-lg px-4 py-3 focus:border-accent-gold outline-none text-accent-gold/50 transition-all" 
-                      type="number" 
-                      placeholder="0.00"
-                      onChange={(e) => {
-                        const activeStage = stages.find(s => s.status === 'active');
-                        if (activeStage) updateStageQuality(activeStage.id, { temperSlope: Number(e.target.value) });
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label className="mono-data text-[10px] block mb-2 opacity-60">YIELD CALCULATION (KG)</label>
-                    <div className="flex items-center gap-4">
-                      <input 
-                        className="flex-1 bg-espresso border hairline-border mono-data text-lg px-4 py-3 focus:border-accent-gold outline-none text-accent-gold" 
-                        type="number" 
-                        placeholder="0.00"
-                        onChange={(e) => {
-                          const activeStage = stages.find(s => s.status === 'active');
-                          if (activeStage) updateStageQuality(activeStage.id, { outputWeight: Number(e.target.value) });
-                        }}
-                      />
-                      <span className="mono-data text-xs">KG</span>
+                <h3 className="mono-data text-xs font-bold text-accent-gold mb-4 border-b hairline-border pb-2">QUALITY_LOGS</h3>
+                <div className="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
+                  {logs.slice(0, 5).map((log) => (
+                    <div key={log.id} className="text-[10px] leading-relaxed">
+                      <span className="font-bold mr-2 text-accent-gold">[{log.type.toUpperCase()}]</span>
+                      <span className="opacity-70">{log.message}</span>
                     </div>
-                  </div>
-                  
-                  <div className="pt-4">
-                    <div className="p-4 border hairline-border border-accent-gold/30 bg-white/5 space-y-3">
-                      <div className="flex justify-between text-[10px] mono-data">
-                        <span>EFFICIENCY_INDEX</span>
-                        <span className="text-accent-gold">98.2%</span>
-                      </div>
-                      <div className="w-full bg-white/5 h-0.5">
-                        <div className="bg-primary h-full" style={{ width: '98.2%' }}></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 pt-4">
-                    <h4 className="mono-data text-[10px] opacity-40">RECENT_LOGS</h4>
-                    <div className="space-y-4 max-h-52 overflow-y-auto custom-scrollbar">
-                      {logs.slice(0, 5).map((log) => (
-                        <div key={log.id} className="text-[10px] leading-relaxed">
-                          <span className="mono-data opacity-40 mr-2">{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                          <span className={cn(
-                            "font-bold mr-2",
-                            log.type === 'error' ? "text-red-400" : "text-accent-gold"
-                          )}>[{log.type.toUpperCase()}]</span>
-                          <span className="opacity-70">{log.message}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Sticky Footer Actions */}
             <footer className="mt-auto border-t hairline-border p-6 bg-espresso/80 backdrop-blur-md flex justify-between items-center z-40">
-              <div className="flex gap-4">
-                <button className="flex items-center gap-2 px-6 py-3 border border-primary text-primary mono-data text-xs font-bold tracking-widest hover:bg-primary/10 transition-colors">
-                  <AlertTriangle className="size-3" />
-                  LOG QUALITY ISSUE
-                </button>
-                <button className="flex items-center gap-2 px-6 py-3 border hairline-border mono-data text-xs font-bold tracking-widest hover:bg-white/5 transition-colors">
-                  <FileText className="size-3" />
-                  ADD SHIFT NOTE
-                </button>
-              </div>
               <div className="flex items-center gap-6">
                 <div className="text-right">
                   <p className="mono-data text-[10px] opacity-40">CURRENT_OPERATOR</p>
-                  <p className="mono-data text-xs font-bold">{user.displayName || 'TECH_ID_842'}</p>
+                  <p className="mono-data text-xs font-bold">{user.displayName}</p>
                 </div>
                 <button 
                   onClick={handleCompleteStage}
-                  className="bg-accent-gold text-espresso px-10 py-3 mono-data text-sm font-bold tracking-[0.2em] hover:brightness-110 shadow-lg shadow-accent-gold/10 transition-all active:scale-95"
+                  className="bg-accent-gold text-espresso px-10 py-3 mono-data text-sm font-bold tracking-[0.2em] hover:brightness-110 shadow-lg active:scale-95 transition-all"
                 >
                   COMPLETE STAGE
                 </button>
@@ -1031,185 +746,43 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
           </main>
         </div>
       ) : (
-        // --- MOBILE VIEW ---
-        <div className="relative flex min-h-screen w-full flex-col bg-espresso overflow-x-hidden">
-          {/* Batch Header */}
-          <header className="border-b hairline-border bg-espresso/80 backdrop-blur-md p-6 pt-10 sticky top-0 z-30">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-primary animate-pulse"></div>
-                <span className="mono-data text-[10px] tracking-[0.2em] text-accent-gold">LIVE_PROD_A</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <button onClick={() => setShowNewBatchModal(true)} className="text-accent-gold">
-                  <Plus className="size-5" />
-                </button>
-                <MoreVertical className="text-accent-gold size-5" />
-              </div>
-            </div>
-            <div className="flex items-baseline gap-3">
-              <h1 className="text-4xl font-bold tracking-tighter text-white mono-data">
-                #{activeBatch?.id.split('-')[1] || activeBatch?.id || "N/A"}
-              </h1>
-            </div>
-            <p className="mono-data text-[10px] tracking-[0.3em] mt-2 text-accent-gold/60">
-              {activeBatch?.clientName || "INTERNAL"} // {activeBatch?.recipeName}
-            </p>
-          </header>
-
-          {/* Quick Stats */}
-          <section className="grid grid-cols-3 border-b hairline-border bg-white/5">
-            <div className="p-4 border-r hairline-border text-center">
-              <p className="mono-data text-[8px] opacity-40 mb-1">HUMIDITY</p>
-              <p className="mono-data text-sm font-bold text-accent-gold">42%</p>
-            </div>
-            <div className="p-4 border-r hairline-border text-center">
-              <p className="mono-data text-[8px] opacity-40 mb-1">TEMP</p>
-              <p className="mono-data text-sm font-bold text-accent-gold">21°C</p>
-            </div>
-            <div className="p-4 text-center">
-              <p className="mono-data text-[8px] opacity-40 mb-1">YIELD</p>
-              <p className="mono-data text-sm font-bold text-accent-gold">98.2%</p>
-            </div>
-          </section>
-
-          {/* Stages List */}
-          <main className="flex-1 flex flex-col p-4 gap-4 bg-espresso pb-32">
-            <h3 className="mono-data text-[10px] font-bold text-accent-gold/40 mb-2">WORKFLOW_SEQUENCE</h3>
-            {stages.map((stage) => (
-              <StageButton 
-                key={stage.id}
-                stage={stage}
-                isActive={stage.status === 'active'}
-                isCompleted={stage.status === 'completed'}
-                onClick={() => {}}
-              />
-            ))}
-          </main>
-
-          {/* Footer Action */}
-          <footer className="p-6 bg-espresso/90 backdrop-blur-xl border-t hairline-border sticky bottom-20 z-10">
-            <button 
-              onClick={handleCompleteStage}
-              className="w-full bg-accent-gold py-5 text-espresso font-bold text-sm tracking-[0.2em] uppercase flex items-center justify-center gap-3 active:scale-95 transition-transform shadow-lg shadow-accent-gold/10"
-            >
-              <CheckCircle2 className="size-5" />
-              COMPLETE_STAGE
-            </button>
-          </footer>
-
-          {/* Navigation Bar */}
-          <nav className="flex border-t hairline-border bg-espresso px-4 py-4 sticky bottom-0 z-40">
-            <button className="flex flex-1 flex-col items-center justify-center gap-1 text-accent-gold">
-              <Archive className="size-5" />
-              <p className="mono-data text-[8px] font-bold">BATCHES</p>
-            </button>
-            <button className="flex flex-1 flex-col items-center justify-center gap-1 text-accent-gold/30">
-              <Layers className="size-5" />
-              <p className="mono-data text-[8px] font-bold">INVENTORY</p>
-            </button>
-            <button className="flex flex-1 flex-col items-center justify-center gap-1 text-accent-gold/30">
-              <FileText className="size-5" />
-              <p className="mono-data text-[8px] font-bold">LOGS</p>
-            </button>
-            <button className="flex flex-1 flex-col items-center justify-center gap-1 text-accent-gold/30">
-              <Settings className="size-5" />
-              <p className="mono-data text-[8px] font-bold">CONFIG</p>
-            </button>
-          </nav>
-        </div>
+        <div className="p-20 text-center">Mobile View Under Construction</div>
       )}
 
-      {/* New Batch Modal */}
       <AnimatePresence>
         {showNewBatchModal && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-100] flex items-center justify-center p-4 bg-background-dark/90 backdrop-blur-sm"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-background-dark/90 backdrop-blur-sm"
           >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="max-w-2xl w-full bg-background-dark border border-primary/20 p-8 shadow-2xl"
-            >
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="max-w-2xl w-full bg-background-dark border border-primary/20 p-8 shadow-2xl">
               <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <FlaskConical className="text-primary size-6" />
-                  <h2 className="text-2xl font-display text-primary tracking-tight">Initialize Production Batch</h2>
-                </div>
-                <button 
-                  onClick={() => setShowNewBatchModal(false)}
-                  className="text-primary/40 hover:text-primary transition-colors"
-                >
-                  <MoreVertical className="rotate-90" />
-                </button>
+                <h2 className="text-2xl font-display text-primary tracking-tight">Initialize Production Batch</h2>
+                <button onClick={() => setShowNewBatchModal(false)} className="text-primary/40 hover:text-primary">✕</button>
               </div>
-
-              <div className="space-y-6">
-                <div>
-                  <p className="font-mono text-[10px] text-primary/40 uppercase tracking-[0.3em] mb-4">Select Approved Quote (Medusa.js)</p>
-                  <div className="space-y-2 max-h-100 overflow-y-auto pr-2 custom-scrollbar">
-                    {approvedQuotes.map((quote) => (
-                      <button
-                        key={quote.id}
-                        onClick={() => handleCreateBatch(quote)}
-                        disabled={isCreatingBatch}
-                        className="w-full text-left p-4 border border-primary/10 bg-primary/5 hover:bg-primary/10 transition-all group flex items-center justify-between"
-                      >
-                        <div>
-                          <p className="text-primary font-bold tracking-tight">{quote.projectName}</p>
-                          <p className="text-primary/60 text-xs font-mono uppercase tracking-widest mt-1">
-                            {quote.clientName} • {quote.recipeName}
-                          </p>
-                          <div className="flex gap-3 mt-2">
-                            <span className="text-[9px] bg-primary/10 text-primary/60 px-1.5 py-0.5 rounded border border-primary/10">
-                              {quote.items.length} ITEMS
-                            </span>
-                            <span className="text-[9px] bg-primary/10 text-primary/60 px-1.5 py-0.5 rounded border border-primary/10">
-                              {quote.email}
-                            </span>
-                          </div>
-                        </div>
-                        <ChevronRight className="text-primary/20 group-hover:text-primary transition-colors" />
-                      </button>
-                    ))}
-                    {approvedQuotes.length === 0 && (
-                      <div className="p-8 text-center border border-dashed border-primary/20">
-                        <p className="text-primary/40 font-mono text-xs uppercase tracking-widest">No approved quotes found in Medusa</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar">
+                {approvedQuotes.map((quote) => (
+                  <button
+                    key={quote.id} onClick={() => handleCreateBatch(quote)}
+                    className="w-full text-left p-4 border border-primary/10 bg-primary/5 hover:bg-primary/10 transition-all flex items-center justify-between"
+                  >
+                    <div>
+                      <p className="text-primary font-bold">{quote.projectName}</p>
+                      <p className="text-primary/60 text-xs font-mono uppercase">{quote.clientName}</p>
+                    </div>
+                    <ChevronRight className="text-primary/20" />
+                  </button>
+                ))}
               </div>
-
-              {isCreatingBatch && (
-                <div className="mt-8 flex items-center gap-4 text-primary">
-                  <div className="size-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <p className="font-mono text-[10px] uppercase tracking-widest">Synchronizing with Medusa & Firestore...</p>
-                </div>
-              )}
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(217, 197, 178, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(217, 197, 178, 0.2);
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(217, 197, 178, 0.1); border-radius: 10px; }
       `}</style>
     </div>
   );
