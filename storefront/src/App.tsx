@@ -103,23 +103,13 @@ const MEDUSA_ADMIN_TOKEN = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN;
 const MEDUSA_BASE_URL = import.meta.env.VITE_MEDUSA_BASE_URL || "https://chocolate.medusajs.app";
 
 const getAdminHeaders = () => {
+  // Use the Secret Key (sk_...) for Admin access
   const token = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN;
-  
-  // If the token is a Publishable Key
-  if (token && token.startsWith('pk_')) {
-    return {
-      "Content-Type": "application/json",
-      "x-publishable-api-key": token // Medusa v2 specific header
-    };
-  }
-  
-  // If the token is a Secret Key
   return {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}`
+    "Authorization": `Bearer ${token}` 
   };
 };
-
 const MedusaService = {
   // PULLS THE INGREDIENTS/RAW MATERIALS
   getProducts: async () => {
@@ -149,30 +139,31 @@ const MedusaService = {
   },
 
   getQuotes: async () => {
-    try {
-      const response = await fetch(`${MEDUSA_BASE_URL}/admin/draft-orders`, {
-        headers: getAdminHeaders()
-      });
+  try {
+    const response = await fetch(`${MEDUSA_BASE_URL}/admin/draft-orders`, {
+      headers: getAdminHeaders()
+    });
 
-      if (!response.ok) return [];
-
-      const data = await response.json();
-      // Use optional chaining (?.) and a fallback empty array ([])
-      return (data.draft_orders || []).map((d: any) => ({
-        id: d.id,
-        displayId: d.display_id,
-        clientName: `${d.cart?.customer?.first_name || ""} ${d.cart?.customer?.last_name || ""}`.trim(),
-        projectName: d.metadata?.project_name || "Custom Chocolate Blend",
-        recipeName: d.cart?.items?.[0]?.title || "Custom Formulation",
-        items: d.cart?.items || [],
-        status: d.status,
-        recipe: d.cart?.items || []
-      }));
-    } catch (error) {
-      console.error("Draft Order Fetch Failed:", error);
+    if (!response.ok) {
+      console.error("Draft Order Auth Failed:", response.status);
       return [];
     }
+
+    const { draft_orders } = await response.json();
+    return (draft_orders || []).map((d: any) => ({
+      id: d.id,
+      displayId: d.display_id,
+      clientName: `${d.cart?.customer?.first_name || ""} ${d.cart?.customer?.last_name || ""}`.trim(),
+      projectName: d.metadata?.project_name || "Custom Chocolate Blend",
+      recipeName: d.cart?.items?.[0]?.title || "Custom Formulation",
+      status: d.status,
+      recipe: d.cart?.items || [] 
+    }));
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    return [];
   }
+}
 };
 
 // --- Components ---
