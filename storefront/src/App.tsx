@@ -333,7 +333,7 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
   }, []);
 */
   // Firestore Connection Test
-  useEffect(() => {
+  /* useEffect(() => {
     if (!isAuthReady) return;
     async function testConnection() {
       try {
@@ -346,7 +346,7 @@ const [isAuthReady, setIsAuthReady] = useState(true); // Set to true immediately
     }
     testConnection();
   }, [isAuthReady]);
-
+*/
   // Data Listeners
   useEffect(() => {
     if (!isAuthReady) return;
