@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/LVCC-GitHub/LVCC/storefront/app/globals.css"],"sourcesContent":["@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n/* Using standard CSS as a fallback if Tailwind fails */\nhtml, body {\n  background-color: #000000 !important;\n  color: #ffffff !important;\n  margin: 0;\n  padding: 0;\n}\n\n.industrial-grid {\n  position: fixed;\n  inset: 0;\n  pointer-events: none;\n  background-size: 40px 40px;\n  background-image:\n    linear-gradient(to right, rgba(255,255,255,0.07) 1px, transparent 1px),\n    linear-gradient(to bottom, rgba(255,255,255,0.07) 1px, transparent 1px);\n}"],"names":[],"mappings":"AAAA;;AACA;;AACA;;AAGA;;;;;;;AAOA"}}]
-}

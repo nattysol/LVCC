@@ -1,0 +1,156 @@
+{
+  "entities": {
+    "Batch": {
+      "title": "Production Batch",
+      "description": "A single production run of a recipe (Master Batch Record)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "quoteId": { "type": "string", "description": "Reference to the approved quote" },
+        "recipeName": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "in-progress", "completed", "halted"] },
+        "currentStageIndex": { "type": "integer" },
+        "specifications": {
+          "type": "object",
+          "properties": {
+            "runSizeKg": { "type": "number" },
+            "targetParticleSizeMicrons": { "type": "number" },
+            "temperingCurve": { "type": "string" },
+            "isGanache": { "type": "boolean" }
+          }
+        },
+        "resources": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Machines, molds, and tools required"
+        },
+        "clientName": { "type": "string" },
+        "projectName": { "type": "string" },
+        "dueDate": { "type": "string", "format": "date" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "quoteId", "recipeName", "status", "currentStageIndex"]
+    },
+    "Stage": {
+      "title": "Production Stage",
+      "description": "A step in the production process",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string" },
+        "name": { "type": "string" },
+        "order": { "type": "integer" },
+        "status": { "type": "string", "enum": ["pending", "active", "completed"] },
+        "startTime": { "type": "string", "format": "date-time" },
+        "endTime": { "type": "string", "format": "date-time" },
+        "elapsedSeconds": { "type": "integer" },
+        "qualityData": {
+          "type": "object",
+          "properties": {
+            "humidity": { "type": "number" },
+            "viscosity": { "type": "number" },
+            "temperSlope": { "type": "number" },
+            "inputWeight": { "type": "number" },
+            "outputWeight": { "type": "number" },
+            "yieldLoss": { "type": "number" }
+          }
+        }
+      },
+      "required": ["batchId", "name", "order", "status"]
+    },
+    "InventoryItem": {
+      "title": "Inventory Item",
+      "description": "Lot-tracked ingredient in stock",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "lotNumber": { "type": "string" },
+        "stockLevel": { "type": "number" },
+        "unit": { "type": "string" },
+        "origin": { "type": "string" }
+      },
+      "required": ["id", "name", "lotNumber", "stockLevel", "unit"]
+    },
+    "Ingredient": {
+      "title": "Batch Ingredient",
+      "description": "Ingredient allocated to a specific batch",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "batchId": { "type": "string" },
+        "inventoryItemId": { "type": "string" },
+        "name": { "type": "string" },
+        "lotNumber": { "type": "string" },
+        "amount": { "type": "number" },
+        "unit": { "type": "string" },
+        "verified": { "type": "boolean", "description": "Scan-to-verify status" }
+      },
+      "required": ["batchId", "name", "amount", "unit"]
+    },
+    "Log": {
+      "title": "Batch Log",
+      "description": "Production log entry for a batch",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "type": { "type": "string", "enum": ["info", "warning", "error", "success"] },
+        "message": { "type": "string" },
+        "technician": { "type": "string" }
+      },
+      "required": ["batchId", "timestamp", "type", "message"]
+    },
+    "Quote": {
+      "title": "Client Quote",
+      "description": "A custom product formulation request from a client",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "clientName": { "type": "string" },
+        "projectName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "recipe": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ingredientId": { "type": "string" },
+              "name": { "type": "string" },
+              "percentage": { "type": "number" }
+            }
+          }
+        },
+        "totalCostEstimate": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["clientName", "projectName", "email", "recipe", "totalCostEstimate", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/quotes/{quoteId}": {
+      "schema": "Quote",
+      "description": "Collection of client formulation requests"
+    },
+    "/batches/{batchId}": {
+      "schema": "Batch",
+      "description": "Collection of production batches"
+    },
+    "/batches/{batchId}/stages/{stageId}": {
+      "schema": "Stage",
+      "description": "Stages within a specific batch"
+    },
+    "/batches/{batchId}/logs/{logId}": {
+      "schema": "Log",
+      "description": "Logs for a specific batch"
+    },
+    "/batches/{batchId}/ingredients/{ingredientId}": {
+      "schema": "Ingredient",
+      "description": "Ingredients used in a specific batch"
+    },
+    "/inventory/{itemId}": {
+      "schema": "InventoryItem",
+      "description": "Master inventory of lot-tracked items"
+    }
+  }
+}

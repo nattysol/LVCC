@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Public Sans", sans-serif;
+
+  --color-primary: #ec5b13;
+  --color-accent-gold: #D9C5B2;
+  --color-espresso: #121110;
+  --color-cream: #F8F6F6;
+  --color-background-dark: #121110;
+}
+
+@layer base {
+  body {
+    @apply bg-background-dark text-cream font-sans antialiased;
+    background-image: 
+      linear-gradient(to right, rgba(217, 197, 178, 0.05) 1px, transparent 1px), 
+      linear-gradient(to bottom, rgba(217, 197, 178, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  body::before {
+    content: "";
+    @apply fixed inset-0 pointer-events-none opacity-[0.04] z-[-1];
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCRPZhloAPb5lOAfMfUZsnws5Vcn0sxcRsEP5pup7P9i5qrvUUXYg40BSJcfkUr9AFUjaZHQ-ZKUoEGuhIL19ZgSiatwOaDXlI6jJPSBcraCc9F3kjwYjes7N_m6taVcAu3-pzJzrVMKmI5JaCFDW0rGLWZVtJFxyFCumt34ene_5I8GQ4FeOCzM3NWsqy9-2il0Cmc7xFTpLqxGzVTN0_GZC-yM2TLN0SBR1SKe365QOIYftE05EJ3a2GtnasyA51CVYBpRCi7uw0);
+  }
+}
+
+@layer components {
+  .mono-data {
+    @apply font-mono uppercase;
+  }
+  
+  .hairline-border {
+    @apply border-[0.5px] border-accent-gold/20;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(217, 197, 178, 0.1);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(217, 197, 178, 0.2);
+  }
+}
