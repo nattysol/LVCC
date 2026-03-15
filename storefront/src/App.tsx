@@ -114,8 +114,16 @@ const MedusaService = {
       const response = await fetch(`${MEDUSA_BASE_URL}/admin/products`, {
         headers: getAdminHeaders()
       });
-      const { products } = await response.json();
-      return products.map((p: any) => ({
+      
+      // If unauthorized or error, catch it here
+      if (!response.ok) {
+        console.error(`Medusa Error: ${response.status}`);
+        return []; 
+      }
+
+      const data = await response.json();
+      // Use optional chaining (?.) and a fallback empty array ([])
+      return (data.products || []).map((p: any) => ({
         id: p.id,
         name: p.title,
         stockLevel: p.variants?.[0]?.inventory_quantity || 0,
@@ -127,28 +135,31 @@ const MedusaService = {
     }
   },
 
-  // PULLS CUSTOM FORMULATION QUOTES (DRAFT ORDERS)
   getQuotes: async () => {
-  try {
-    const response = await fetch(`${MEDUSA_BASE_URL}/admin/draft-orders`, {
-      headers: getAdminHeaders()
-    });
-    const { draft_orders } = await response.json();
-    return draft_orders.map((d: any) => ({
-      id: d.id,
-      displayId: d.display_id,
-      clientName: `${d.cart?.customer?.first_name || ""} ${d.cart?.customer?.last_name || ""}`.trim(),
-      projectName: d.metadata?.project_name || "Custom Chocolate Blend",
-      recipeName: d.cart?.items?.[0]?.title || "Custom Formulation", // Map title to recipeName
-      items: d.cart?.items || [], // Ensure items exists
-      status: d.status,
-      recipe: d.cart?.items || [] // For backward compatibility with your Batch logic
-    }));
-  } catch (error) {
-    console.error("Draft Order Fetch Failed:", error);
-    return [];
+    try {
+      const response = await fetch(`${MEDUSA_BASE_URL}/admin/draft-orders`, {
+        headers: getAdminHeaders()
+      });
+
+      if (!response.ok) return [];
+
+      const data = await response.json();
+      // Use optional chaining (?.) and a fallback empty array ([])
+      return (data.draft_orders || []).map((d: any) => ({
+        id: d.id,
+        displayId: d.display_id,
+        clientName: `${d.cart?.customer?.first_name || ""} ${d.cart?.customer?.last_name || ""}`.trim(),
+        projectName: d.metadata?.project_name || "Custom Chocolate Blend",
+        recipeName: d.cart?.items?.[0]?.title || "Custom Formulation",
+        items: d.cart?.items || [],
+        status: d.status,
+        recipe: d.cart?.items || []
+      }));
+    } catch (error) {
+      console.error("Draft Order Fetch Failed:", error);
+      return [];
+    }
   }
-}
 };
 
 // --- Components ---
