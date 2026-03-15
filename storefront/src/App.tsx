@@ -102,20 +102,29 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
 const MEDUSA_ADMIN_TOKEN = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN;
 const MEDUSA_BASE_URL = import.meta.env.VITE_MEDUSA_BASE_URL || "https://chocolate.medusajs.app";
 
-const getAdminHeaders = () => {
-  // Use the Secret Key (sk_...) for Admin access
-  const token = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN;
+const getAdminHeaders = (isAdmin: boolean) => {
+  const skToken = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN; // Your sk_...
+  const pkToken = import.meta.env.VITE_MEDUSA_PUBLISHABLE_KEY; // Your pk_...
+
+  if (isAdmin) {
+    return {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${skToken}`
+    };
+  }
+
   return {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}` 
+    "x-publishable-api-key": pkToken
   };
 };
 const MedusaService = {
   // PULLS THE INGREDIENTS/RAW MATERIALS
   getProducts: async () => {
     try {
+      // Products use the STOREfront (pk_ key)
       const response = await fetch(`${MEDUSA_BASE_URL}/store/products`, {
-        headers: getAdminHeaders()
+        headers: getAdminHeaders(false) 
       });
       
       // If unauthorized or error, catch it here
@@ -139,10 +148,11 @@ const MedusaService = {
   },
 
   getQuotes: async () => {
-  try {
-    const response = await fetch(`${MEDUSA_BASE_URL}/admin/draft-orders`, {
-      headers: getAdminHeaders()
-    });
+    try {
+      // Draft Orders use the ADMIN (sk_ key)
+      const response = await fetch(`${MEDUSA_BASE_URL}/admin/draft-orders`, {
+        headers: getAdminHeaders(true)
+      });
 
     if (!response.ok) {
       console.error("Draft Order Auth Failed:", response.status);
