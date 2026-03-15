@@ -100,7 +100,7 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
 
 // --- Medusa Service ---
 const MEDUSA_ADMIN_TOKEN = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN;
-const MEDUSA_BASE_URL = import.meta.env.VITE_MEDUSA_BASE_URL || "http://localhost:9000";
+const MEDUSA_BASE_URL = import.meta.env.VITE_MEDUSA_BASE_URL || "https://chocolate.medusajs.app";
 
 const getAdminHeaders = () => ({
   "Content-Type": "application/json",
