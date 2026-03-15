@@ -105,25 +105,26 @@ const MEDUSA_BASE_URL = import.meta.env.VITE_MEDUSA_BASE_URL || "https://chocola
 const getAdminHeaders = () => {
   const token = import.meta.env.VITE_MEDUSA_ADMIN_TOKEN;
   
-  // If using a Secret Key (sk_)
-  if (token?.startsWith('sk_')) {
+  // If the token is a Publishable Key
+  if (token && token.startsWith('pk_')) {
     return {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+      "x-publishable-api-key": token // Medusa v2 specific header
     };
   }
   
-  // If using a Publishable Key (pk_) - Common for frontends
+  // If the token is a Secret Key
   return {
     "Content-Type": "application/json",
-    "x-publishable-api-key": token 
+    "Authorization": `Bearer ${token}`
   };
 };
+
 const MedusaService = {
   // PULLS THE INGREDIENTS/RAW MATERIALS
   getProducts: async () => {
     try {
-      const response = await fetch(`${MEDUSA_BASE_URL}/admin/products`, {
+      const response = await fetch(`${MEDUSA_BASE_URL}/store/products`, {
         headers: getAdminHeaders()
       });
       
